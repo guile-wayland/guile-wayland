@@ -10,7 +10,7 @@ BUILT_SOURCES = w.x
 CLEANFILES = *.x
 lib_LTLIBRARIES = libguile-wayland.la
 
-libguile_wayland_la_SOURCES = w.c
+libguile_wayland_la_SOURCES = w-s.c
 libguile_wayland_la_LIBADD = ${WAYLAND_SERVER_LIBS} ${GUILE_LIBS}
 libguile_wayland_la_LDFLAGS = -module $(GUILE_LDFLAGS)
 libguile_wayland_la_DEPENDENCIES = ${LTLIBOBJS}

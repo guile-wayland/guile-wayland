@@ -1,5 +1,6 @@
 #include <libguile.h>
 #include <wayland-server-core.h>
+
 static SCM w_event_loop_type;
 
 static void
