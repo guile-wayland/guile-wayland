@@ -20,7 +20,32 @@ SUFFIXES = .scm .go
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
 
 
-moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)
-godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
+moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)/wayland
+godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
-SUBDIRS = lisp/wayland/
+SOURCES = ../wayland.scm \
+ argument.scm        \
+ callback.scm        \
+ client.scm          \
+ client-core.scm     \
+ compositor.scm      \
+ config.scm          \
+ cursor.scm          \
+ display.scm         \
+ egl.scm             \
+ event-loop.scm      \
+ global.scm          \
+ interface.scm       \
+ keyboard.scm        \
+ list.scm            \
+ listener.scm        \
+ output.scm          \
+ pointer.scm         \
+ proxy.scm           \
+ registry.scm        \
+ resource.scm        \
+ server-core.scm     \
+ shm.scm             \
+ signal.scm          \
+ touch.scm           \
+ util.scm

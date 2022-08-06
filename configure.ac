@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([guile-wayland], [0.0.1], [])
-AC_CONFIG_SRCDIR([src])
+AC_CONFIG_SRCDIR([lisp])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
@@ -11,6 +11,8 @@ AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
 AM_SILENT_RULES([yes])
 
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile lisp/wayland/Makefile lisp/wayland/config.scm])
+AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_USE_SYSTEM_EXTENSIONS
 # Checks for programs.
@@ -23,15 +25,22 @@ GUILE_PKG([3.0])
 GUILE_PROGS
 GUILE_SITE_DIR
 
-PKG_CHECK_MODULES([GUILE], [guile-3.0])
 PKG_CHECK_MODULES([WAYLAND_SERVER], [wayland-server])
+PKG_CHECK_VAR([WAYLAND_LIBDIR],[wayland-server],[libdir])
+PKG_CHECK_VAR([WAYLAND_SCANNER],[wayland-scanner],[wayland_scanner])
+PKG_CHECK_VAR([WAYLAND_PROTOCOLS],[wayland-protocols],[pkgdatadir])
+AC_SUBST([WLROOTS_LIBDIR])
+AC_SUBST([WAYLAND_LIBDIR])
+dnl AC_SUBST([XCB_LIBDIR])
+
 #AC_CHECK_LIB()
-AC_CONFIG_FILES([Makefile src/Makefile])
+
 # Checks for header files.
 AC_CHECK_HEADERS([wayland-server.h])
 AC_CHECK_HEADERS([libguile.h])
 # Checks for typedefs, structures, and compiler characteristics.
 LT_INIT([dlopen])
+GUILE_MODULE_REQUIRED([bytestructures guile])
 dnl LT_CONFIG_LTDL_DIR([libltdl])
 dnl LTDL_INIT
 # Checks for library functions.
