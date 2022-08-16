@@ -26,12 +26,11 @@
     (arguments `(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      (list autoconf
-           automake-1.16.5
+           automake
            libtool
            pkg-config
            texinfo
-           guile-3.0-latest
-           ))
+           guile-3.0-latest))
     (inputs (list guile-3.0-latest wayland))
     (propagated-inputs (list guile-bytestructures))
     (synopsis "")
