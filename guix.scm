@@ -30,8 +30,9 @@
            libtool
            pkg-config
            texinfo
+           guile-3.0-latest
            ))
-    (inputs (list guile-3.0 wayland))
+    (inputs (list guile-3.0-latest wayland))
     (propagated-inputs (list guile-bytestructures))
     (synopsis "")
     (description "")
