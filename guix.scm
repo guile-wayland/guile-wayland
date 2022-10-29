@@ -23,7 +23,22 @@
                         #:recursive? #t
                         #:select? (git-predicate (dirname (current-filename)))))
     (build-system gnu-build-system)
-    (arguments `(#:make-flags '("GUILE_AUTO_COMPILE=0")))
+    (arguments (list #:make-flags '(list "GUILE_AUTO_COMPILE=0")
+                     #:phases
+                     #~(modify-phases %standard-phases
+                         (add-after 'build 'load-extension
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (substitute*
+                                 (find-files "." ".*\\.scm")
+                               (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
+                                (string-append
+                                 (object->string
+                                  `(or (false-if-exception (load-extension "libguile-wayland" ,o))
+                                       (load-extension
+                                        ,(string-append
+                                          (assoc-ref outputs "out")
+                                          "/lib/libguile-wayland.so")
+                                        ,o)))))))))))
     (native-inputs
      (list autoconf
            automake

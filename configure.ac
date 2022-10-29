@@ -24,13 +24,14 @@ m4_pattern_forbid([PKG_CHECK_MODULES])
 GUILE_PKG([3.0])
 GUILE_PROGS
 GUILE_SITE_DIR
-
+PKG_CHECK_MODULES([GUILE], [guile-3.0])
 PKG_CHECK_MODULES([WAYLAND_SERVER], [wayland-server])
 PKG_CHECK_VAR([WAYLAND_LIBDIR],[wayland-server],[libdir])
 PKG_CHECK_VAR([WAYLAND_SCANNER],[wayland-scanner],[wayland_scanner])
 PKG_CHECK_VAR([WAYLAND_PROTOCOLS],[wayland-protocols],[pkgdatadir])
 AC_SUBST([WLROOTS_LIBDIR])
 AC_SUBST([WAYLAND_LIBDIR])
+LT_INIT([dlopen])
 dnl AC_SUBST([XCB_LIBDIR])
 
 #AC_CHECK_LIB()
