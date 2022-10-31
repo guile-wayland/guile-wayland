@@ -29,7 +29,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 lib_LTLIBRARIES = libguile-wayland.la
 $(SOURCES):  $(lib_LTLIBRARIES)
-libguile_wayland_la_SOURCES= listener.c
+libguile_wayland_la_SOURCES=
 SOURCES = ../wayland.scm \
  argument.scm        \
  callback.scm        \

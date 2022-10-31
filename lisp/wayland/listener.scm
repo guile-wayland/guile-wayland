@@ -16,9 +16,6 @@
             .link
             .notify))
 
-(eval-when (expand load eval)
-  (load-extension "libguile-wayland" "scm_init_wl_listener"))
-
 (define wl-notify-func
   (bs:pointer
    (delay (bs:struct `((listener ,%wl-listener)
