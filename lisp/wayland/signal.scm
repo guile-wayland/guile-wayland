@@ -12,7 +12,8 @@
             wrap-wl-signal
             unwrap-wl-signal
             wl-signal-init
-            .listener-list))
+            .listener-list
+            <wl-signal>))
 (eval-when (expand load eval)
   (define %wl-signal-struct
     (bs:struct `((listener-list ,(bs:pointer %wl-list))))))
