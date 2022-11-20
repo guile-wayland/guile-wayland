@@ -20,8 +20,8 @@
 ;;   (pointer #:ass))
 (define %wl-list
   (bs:struct
-   `((prev ,(bs:pointer '*))
-     (next ,(bs:pointer '*)))))
+   `((prev ,(bs:pointer (delay %wl-list)))
+     (next ,(bs:pointer (delay %wl-list))))))
 
 (define-class <wl-list> ()
   (bytestructure #:accessor .bytestructure #:init-keyword #:bytestructure))

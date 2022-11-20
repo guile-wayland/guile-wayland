@@ -34,17 +34,26 @@
         #:init-keyword #:data)
   (link #:allocation #:virtual
         #:accessor .link
-        #:slot-ref (lambda (a) (wrap-wl-list (bytestructure-ref (.bytestructure a) 'link)))
+        #:slot-ref (lambda (a)
+                     (wrap-wl-list
+                      (bytestructure-ref
+                       (pointer->bytestructure (.data a)
+                                               %wl-listener)
+                       'link)))
         #:slot-set! (lambda (instance new-val)
                       (bytestructure-set!
-                       (.bytestructure instance)
+                       (pointer->bytestructure (.data instance)
+                                               %wl-listener)
                        'link new-val)))
   (notify #:allocation #:virtual
           #:accessor .notify
-          #:slot-ref (lambda (a) (bytestructure-ref (.bytestructure a) 'notify))
+          #:slot-ref (lambda (a) (bytestructure-ref
+                                  (pointer->bytestructure (.data a)
+                                                          %wl-listener) 'notify))
           #:slot-set! (lambda (instance new-val)
                         (bytestructure-set!
-                         (.bytestructure instance)
+                         (pointer->bytestructure (.data instance)
+                                                 %wl-listener)
                          'notify new-val))))
 
 (define (make-wl-listener ;; link
@@ -53,8 +62,7 @@
   (make <wl-listener> #:data
         (bytestructure->pointer (bytestructure
                                  %wl-listener
-                                 `((link ,(bytestructure-bytevector (bytestructure %wl-list)))
-                                   (notify
+                                 `((notify
                                     ,(procedure->pointer
                                       void
                                       (lambda (listener data)

@@ -16,7 +16,7 @@
             <wl-signal>))
 (eval-when (expand load eval)
   (define %wl-signal-struct
-    (bs:struct `((listener-list ,(bs:pointer %wl-list))))))
+    (bs:struct `((listener-list ,%wl-list)))))
 
 (define-bytestructure-accessors %wl-signal-struct
   wl-signal-unwrap wl-signal-ref wl-signal-set!)
@@ -27,12 +27,14 @@
                  #:accessor .listener-list
                  #:slot-ref (lambda (a)
                               (wrap-wl-list
-                               (make-pointer (wl-signal-ref (.bytevectory a) listener-list))))
+                               (make-pointer (wl-signal-ref
+                                              (.bytevectory a)
+                                              listener-list prev * next))))
                  #:slot-set! (lambda (instance new-val)
                                (wl-signal-set!
                                 (.bytevectory instance)
-                                listener-list (unwrap-wl-list new-val))
-                               )))
+                                listener-list prev * next
+                                (unwrap-wl-list new-val)))))
 (define (wrap-wl-signal p)
   (make <wl-signal> #:bytevectory
         (cond ((pointer? p)
