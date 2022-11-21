@@ -16,6 +16,9 @@
             .link
             .notify))
 
+(eval-when (expand load eval)
+  (load-extension "libguile-wayland" "scm_init_wl_listener"))
+
 (define wl-notify-func
   (bs:pointer
    (delay (bs:struct `((listener ,%wl-listener)
@@ -56,19 +59,10 @@
                                                  %wl-listener)
                          'notify new-val))))
 
-(define (make-wl-listener ;; link
+(define (make-wl-listener
          notify)
-  ;; (pk 'link-1 link notify)
-  (make <wl-listener> #:data
-        (bytestructure->pointer (bytestructure
-                                 %wl-listener
-                                 `((notify
-                                    ,(procedure->pointer
-                                      void
-                                      (lambda (listener data)
-                                        (pk 'listener listener data)
-                                        (notify (wrap-wl-listener listener) data))
-                                      '(* *))))))))
+  (%make-wl-listener (lambda (l data)
+                       (notify (wrap-wl-listener l) data))))
 
 (define (wrap-wl-listener p)
   (make <wl-listener> #:data p ;; (cond ((pointer? p ) (pointer->bytestructure p %wl-listener))
