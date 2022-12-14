@@ -18,7 +18,7 @@ SCM_DEFINE(scm_make_wl_listener,"%make-wl-listener",1,0,0,(SCM proc),""){
   new_listener->notify=scm_to_pointer(p);
   SCM sl=scm_call_1(scm_c_public_ref("wayland listener", "wrap-wl-listener"),
                     pp);
-  scm_gc_protect_object(sl);
+  scm_gc_protect_object(pp);
   return sl;
 }
 
