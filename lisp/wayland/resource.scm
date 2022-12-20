@@ -1,4 +1,5 @@
 (define-module (wayland resource)
+  #:use-module (wayland base)
   #:use-module (ice-9 format)
   #:use-module ((system foreign)
                 #:select (define-wrapped-pointer-type
@@ -17,11 +18,10 @@
             wl-resource-get-version
             wl-resource-get-class))
 
-(define-wrapped-pointer-type wl-resource
-  wl-resource?
-  wrap-wl-resource unwrap-wl-resource
-  (lambda (b p)
-    (format p "#<wl-resource ~x>" (pointer-address (unwrap-wl-resource b)))))
+(define-wl-type <wl-resource>
+  %wl-resource %make-wl-resource
+  ---
+  wl-resource? wrap-wl-resource unwrap-wl-resource)
 
 (define %wl-resource-create
   (wayland-server->procedure '* "wl_resource_create" (list '* '* ffi:int ffi:uint32)))

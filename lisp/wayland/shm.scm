@@ -8,6 +8,7 @@
                                            (int32 . ffi:int32)
                                            (uint32 . ffi:uint32)
                                            (int . ffi:int)))
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (wayland proxy)
   #:use-module (wayland client)
@@ -43,11 +44,10 @@
           width height
           stride format)))
 
-(define-wrapped-pointer-type wl-shm-buffer
-  wl-shm-buffer?
-  wrap-wl-shm-buffer unwrap-wl-shm-buffer
-  (lambda (b p)
-    (format p "#<wl-shm-buffer ~x>" (pointer-address (unwrap-wl-shm-buffer b)))))
+(define-wl-type <wl-shm-buffer>
+  %wl-shm-buffer %make-wl-shm-buffer
+  ---
+  wl-shm-buffer? wrap-wl-shm-buffer unwrap-wl-shm-buffer)
 
 (define %wl-shm-buffer-get
   (wayland-server->procedure '* "wl_shm_buffer_get" '(*)))

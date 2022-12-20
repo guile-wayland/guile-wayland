@@ -3,6 +3,7 @@
   #:use-module (wayland display)
   #:use-module (wayland listener)
   #:use-module (wayland resource)
+  #:use-module (wayland base)
   #:use-module (wayland config)
   #:use-module (wayland list)
   #:use-module (wayland util)
@@ -36,11 +37,10 @@
             wl-client-get-link
             wl-client-get-display))
 
-(define-wrapped-pointer-type wl-client
-  wl-client?
-  wrap-wl-client unwrap-wl-client
-  (lambda (b p)
-    (format p "#<wl-client ~x>" (pointer-address (unwrap-wl-client b)))))
+(define-wl-type <wl-client>
+  %wl-client %make-wl-client
+  ---
+  wl-client? wrap-wl-client unwrap-wl-client)
 
 (define %wl-client-create (wayland-server->procedure '* "wl_client_create" (list '* ffi:int)))
 

@@ -1,5 +1,6 @@
 (define-module (wayland list)
   #:use-module (oop goops)
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (bytestructures guile)
   #:use-module ((system foreign) #:select (make-pointer %null-pointer void pointer?(int . ffi:int)))
@@ -12,9 +13,7 @@
             wl-list-remove
             wl-list-length
             wl-list-empty
-            make-wl-list
-            .bytestructure
-            wl-list-bytestructure))
+            make-wl-list))
 
 ;; (define-class <wl-list> ()
 ;;   (pointer #:ass))
@@ -23,19 +22,15 @@
    `((prev ,(bs:pointer (delay %wl-list)))
      (next ,(bs:pointer (delay %wl-list))))))
 
-(define-class <wl-list> ()
-  (bytestructure #:accessor .bytestructure #:init-keyword #:bytestructure))
+(define-wl-type <wl-list>
+  %%wl-list %make-wl-list
+  ---
+  wl-list?
+  wrap-wl-list unwrap-wl-list)
 
-(define (wrap-wl-list p)
-  (make <wl-list> #:bytestructure (if (pointer? p) (pointer->bytestructure p %wl-list) p)))
 
 (define (make-wl-list )
-  (wrap-wl-list #;(make-c-struct '(* *) (list %null-pointer %null-pointer)) (bytestructure %wl-list)
-                                                                            ))
-(define (unwrap-wl-list o)
-  (bytestructure->pointer (.bytestructure o)))
-
-(define (wl-list-bytestructure o) (.bytestructure o))
+  (wrap-wl-list (bytestructure->pointer (bytestructure %wl-list))))
 
 (define-public (wl-list-next wl-l)
   (wrap-wl-list
@@ -57,7 +52,6 @@
 (define (wl-list-init wl-l)
   (let ((p (unwrap-wl-list wl-l)))
     (%wl-list-init p)
-    ;; (pk 'wl-list-init (wrap-wl-list p))
     wl-l))
 
 (define wl-list-insert

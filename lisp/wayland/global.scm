@@ -2,6 +2,7 @@
   #:use-module (ice-9 format)
   #:use-module (wayland config)
   #:use-module (wayland interface)
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module ((system foreign) #:select (null-pointer?
                                            bytevector->pointer
@@ -25,8 +26,7 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (wl-gloabl
-            wl-gloabl?
+  #:export (wl-global?
             wrap-wl-global
             unwrap-wl-global
 
@@ -34,11 +34,10 @@
             wl-global-remove
             wl-global-destroy))
 
-(define-wrapped-pointer-type wl-gloabl
-  wl-global?
-  wrap-wl-global unwrap-wl-global
-  (lambda (b p)
-    (format p "#<wl-global ~x>" (pointer-address (unwrap-wl-global b)))))
+(define-wl-type <wl-global>
+  %wl-global %make-wl-global
+  ---
+  wl-global? wrap-wl-global unwrap-wl-global)
 
 (define wl-global-create
   (let ((proc (wayland-server->procedure '* "wl_global_create" (list '* '* ffi:int '* '*))))

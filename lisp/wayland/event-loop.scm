@@ -1,6 +1,7 @@
 (define-module (wayland event-loop)
   #:use-module (ice-9 format)
   #:use-module (wayland config)
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (wayland interface)
   #:use-module ((system foreign) #:select (null-pointer?
@@ -36,17 +37,16 @@
             wl-event-loop-add-signal
             wl-event-loop-dispatch))
 
-(define-wrapped-pointer-type wl-event-loop
-  wl-event-loop?
-  wrap-wl-event-loop unwrap-wl-event-loop
-  (lambda (b p)
-    (format p "#<wl-event-loop ~x>" (pointer-address (unwrap-wl-event-loop b)))))
+(define-wl-type <wl-event-loop>
+  %wl-event-loop %make-wl-event-loop
+  ---
+  wl-event-loop? wrap-wl-event-loop unwrap-wl-event-loop)
 
-(define-wrapped-pointer-type wl-event-source
+(define-wl-type <wl-event-source>
+  %wl-event-source %make-wl-event-source
+  ---
   wl-event-source?
-  wrap-wl-event-source unwrap-wl-event-source
-  (lambda (b p)
-    (format p "#<wl-event-source ~x>" (pointer-address (unwrap-wl-event-source b)))))
+  wrap-wl-event-source unwrap-wl-event-source)
 
 (define (make-interface)
   (bytestructure %wl-interface))

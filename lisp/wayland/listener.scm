@@ -1,6 +1,7 @@
 (define-module (wayland listener)
   #:use-module (wayland list)
   #:use-module (oop goops)
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module ((system foreign) #:select (%null-pointer
                                            procedure->pointer
@@ -28,46 +29,25 @@
    `((link ,%wl-list)
      (notify ,wl-notify-func))))
 
+(define-wl-type <wl-listener>
+  %%wl-listener %%make-wl-listener
+  ---
+  wl-listener? wrap-wl-listener unwrap-wl-listener)
 
-;; (define-class <wl-listener> ()
-;;   (pointer))
-
-(define-class <wl-listener> ()
-  (data #:accessor .data
-        #:init-keyword #:data)
-  (link #:allocation #:virtual
-        #:accessor .link
-        #:slot-ref (lambda (a)
-                     (wrap-wl-list
-                      (bytestructure-ref
-                       (pointer->bytestructure (.data a)
-                                               %wl-listener)
-                       'link)))
-        #:slot-set! (lambda (instance new-val)
-                      (bytestructure-set!
-                       (pointer->bytestructure (.data instance)
-                                               %wl-listener)
-                       'link new-val)))
-  (notify #:allocation #:virtual
-          #:accessor .notify
-          #:slot-ref (lambda (a) (bytestructure-ref
-                                  (pointer->bytestructure (.data a)
-                                                          %wl-listener) 'notify))
-          #:slot-set! (lambda (instance new-val)
-                        (bytestructure-set!
-                         (pointer->bytestructure (.data instance)
-                                                 %wl-listener)
-                         'notify new-val))))
+(define-method (.link (a <wl-listener>))
+  (wrap-wl-list
+   (bytestructure->pointer
+    (bytestructure-ref
+     (pointer->bytestructure (unwrap-wl-listener a)
+                             %wl-listener)
+     'link))))
+(define-method (.notify (a <wl-listener>))
+  (bytestructure-ref
+   (pointer->bytestructure (unwrap-wl-listener a)
+                           %wl-listener)
+   'notify))
 
 (define (make-wl-listener
          notify)
   (%make-wl-listener (lambda (l data)
                        (notify (wrap-wl-listener l) data))))
-
-(define (wrap-wl-listener p)
-  (make <wl-listener> #:data p ;; (cond ((pointer? p ) (pointer->bytestructure p %wl-listener))
-        ;;       ((bytestructure? p) p))
-        ))
-
-(define (unwrap-wl-listener listener)
-  (.data listener))
