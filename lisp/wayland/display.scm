@@ -2,6 +2,7 @@
   #:use-module (ice-9 format)
   ;; #:use-module (srfi srfi-26)
   #:use-module (oop goops)
+  #:use-module (wayland base)
   #:use-module (wayland config)
   #:use-module (wayland proxy)
   #:use-module (wayland registry)
@@ -71,26 +72,12 @@
   (pointer->wl-interface
    (wayland-server->pointer "wl_display_interface")))
 
-;; (define-public (wl-display-get-registry)
-;;   (pk 'wl-display-get-registry(bytestructure-ref
-;;                                (pointer->bytestructure
-;;                                 (wl-interface->pointer %wl-display-interface)
-;;                                 wl-display-interface-struct)
-;;                                'get-registry )))
-
 (define WL_DISPLAY_GET_REGISTRY 1)
 
-;; (define-wrapped-pointer-type wl-display
-;;   wl-display?
-;;   wrap-wl-display unwrap-wl-display
-;;   (lambda (b p)
-;;     (format p "#<wl-display ~x>" (pointer-address (unwrap-wl-display b)))))
-(define-class <wl-display> (<wl-proxy>))
-(define (wl-display? i) (eq? (class-of i) <wl-display>))
-(define (wrap-wl-display p)
-  (make <wl-display> #:pointer p))
-(define (unwrap-wl-display i)
-  (.pointer i))
+(define-wl-type <wl-display>
+  %wl-display %make-wl-display
+  ---
+  wl-display? wrap-wl-display unwrap-wl-display)
 
 (define-wl-server-procedure (wl-display-create)
   ('* "wl_display_create" '())

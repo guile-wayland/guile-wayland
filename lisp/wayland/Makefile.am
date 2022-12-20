@@ -32,6 +32,7 @@ lib_LTLIBRARIES = libguile-wayland.la
 $(SOURCES):  $(lib_LTLIBRARIES)
 libguile_wayland_la_SOURCES=signal.c listener.c
 SOURCES = ../wayland.scm \
+ base.scm            \
  argument.scm        \
  callback.scm        \
  client.scm          \
