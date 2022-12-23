@@ -26,7 +26,7 @@
                        (data ,(bs:pointer 'void)))))))
 (define %wl-listener
   (bs:struct
-   `((link ,%wl-list)
+   `((link ,%wl-list-struct)
      (notify ,wl-notify-func))))
 
 (define-wl-type <wl-listener>

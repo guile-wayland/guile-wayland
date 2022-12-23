@@ -5,7 +5,7 @@
   #:use-module (bytestructures guile)
   #:use-module ((system foreign) #:select (make-pointer %null-pointer void pointer?(int . ffi:int)))
   #:export (;wl-list-init
-            %wl-list
+            %wl-list-struct
             wrap-wl-list
             unwrap-wl-list
             wl-list-init
@@ -17,32 +17,32 @@
 
 ;; (define-class <wl-list> ()
 ;;   (pointer #:ass))
-(define %wl-list
+(define %wl-list-struct
   (bs:struct
-   `((prev ,(bs:pointer (delay %wl-list)))
-     (next ,(bs:pointer (delay %wl-list))))))
+   `((prev ,(bs:pointer (delay %wl-list-struct)))
+     (next ,(bs:pointer (delay %wl-list-struct))))))
 
 (define-wl-type <wl-list>
-  %%wl-list %make-wl-list
+  %wl-list %make-wl-list
   ---
   wl-list?
   wrap-wl-list unwrap-wl-list)
 
 
 (define (make-wl-list )
-  (wrap-wl-list (bytestructure->pointer (bytestructure %wl-list))))
+  (wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct))))
 
 (define-public (wl-list-next wl-l)
   (wrap-wl-list
    (make-pointer
     (bytestructure-ref
-     (pointer->bytestructure (unwrap-wl-list wl-l) %wl-list) 'next))))
+     (pointer->bytestructure (unwrap-wl-list wl-l) %wl-list-struct) 'next))))
 
 (define-public (wl-list-prev wl-l)
   (wrap-wl-list
    (make-pointer
     (bytestructure-ref
-     (pointer->bytestructure (unwrap-wl-list wl-l) %wl-list) 'prev))))
+     (pointer->bytestructure (unwrap-wl-list wl-l) %wl-list-struct) 'prev))))
 
 (define %wl-list-init
   (wayland-server->procedure

@@ -16,7 +16,7 @@
             <wl-signal>))
 (eval-when (expand load eval)
   (define %wl-signal-struct
-    (bs:struct `((listener-list ,%wl-list)))))
+    (bs:struct `((listener-list ,%wl-list-struct)))))
 
 (define-bytestructure-accessors %wl-signal-struct
   wl-signal-unwrap wl-signal-ref wl-signal-set!)
