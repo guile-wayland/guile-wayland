@@ -53,7 +53,6 @@ SOURCES = ../wayland.scm \
  proxy.scm           \
  registry.scm        \
  resource.scm        \
- server-core.scm     \
  shm.scm             \
  signal.scm          \
  touch.scm           \
