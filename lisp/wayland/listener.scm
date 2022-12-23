@@ -10,7 +10,7 @@
                                            pointer->bytevector))
   #:use-module (bytestructures guile)
   #:duplicates (merge-generics)
-  #:export (%wl-listener
+  #:export (%wl-listener-struct
             wrap-wl-listener
             unwrap-wl-listener
             make-wl-listener
@@ -22,15 +22,15 @@
 
 (define wl-notify-func
   (bs:pointer
-   (delay (bs:struct `((listener ,%wl-listener)
+   (delay (bs:struct `((listener ,%wl-listener-struct)
                        (data ,(bs:pointer 'void)))))))
-(define %wl-listener
+(define %wl-listener-struct
   (bs:struct
    `((link ,%wl-list-struct)
      (notify ,wl-notify-func))))
 
 (define-wl-type <wl-listener>
-  %%wl-listener %%make-wl-listener
+  %wl-listener %%make-wl-listener
   ---
   wl-listener? wrap-wl-listener unwrap-wl-listener)
 
@@ -39,12 +39,12 @@
    (bytestructure->pointer
     (bytestructure-ref
      (pointer->bytestructure (unwrap-wl-listener a)
-                             %wl-listener)
+                             %wl-listener-struct)
      'link))))
 (define-method (.notify (a <wl-listener>))
   (bytestructure-ref
    (pointer->bytestructure (unwrap-wl-listener a)
-                           %wl-listener)
+                           %wl-listener-struct)
    'notify))
 
 (define (make-wl-listener
