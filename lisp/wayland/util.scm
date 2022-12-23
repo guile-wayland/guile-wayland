@@ -34,16 +34,11 @@
             string->pointer-address
             %wl-array
             wl-container-of
-            wl-log-set-handler-server
-            bytestructure+offset->pointer)
+            wl-log-set-handler-server)
   #:export-syntax (define-wl-server-procedure))
 
 ;; (define-syntax-rule (define-callback name)
 ;;   (define name ))
-
-(define (bytestructure+offset->pointer b)
-  (let ((offset (bytestructure-offset b)))
-    (+ (bytestructure->pointer b) offset)))
 
 (define (wayland-server->pointer name)
   (dynamic-func name (dynamic-link %libwayland-server)))
@@ -73,8 +68,9 @@
 
 (define char* (bs:pointer int8))
 
-(define bytestructure->pointer
-  (compose bytevector->pointer bytestructure-bytevector))
+(define (bytestructure->pointer b)
+  (bytevector->pointer (bytestructure-bytevector b)
+                       (bytestructure-offset b)))
 
 (define (pointer->bytestructure pointer struct)
   (make-bytestructure (pointer->bytevector pointer (bytestructure-descriptor-size struct))
