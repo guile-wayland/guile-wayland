@@ -34,8 +34,11 @@
           (class-name (class-of o))
           (wl-list-length o)
           (%wl-list o)))
-(define (make-wl-list )
-  (wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct))))
+
+(define (make-wl-list)
+  (let ((o(wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct)))))
+    (wl-list-init o)
+    o))
 
 (define-public (wl-list-next wl-l)
   (wrap-wl-list
