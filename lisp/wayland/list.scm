@@ -3,6 +3,7 @@
   #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (bytestructures guile)
+  #:use-module (ice-9 format)
   #:use-module ((system foreign) #:select (make-pointer %null-pointer void pointer?(int . ffi:int)))
   #:export (;wl-list-init
             %wl-list-struct
@@ -28,7 +29,11 @@
   wl-list?
   wrap-wl-list unwrap-wl-list)
 
-
+(define-method (write (o <wl-list>) port)
+  (format port "#<~s ~a ~x>"
+          (class-name (class-of o))
+          (wl-list-length o)
+          (%wl-list o)))
 (define (make-wl-list )
   (wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct))))
 
