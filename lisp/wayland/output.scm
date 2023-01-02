@@ -2,8 +2,10 @@
   #:use-module (wayland interface)
   #:use-module (oop goops)
   #:use-module (wayland util)
-  #:export (%wl-output-interface))
+  #:export (%wl-output-interface
+            %wl-output-struct))
 
+(define %wl-output-struct (bs:unknow))
 (define %wl-output-interface-struct
   (bs:struct `((release ,(bs:pointer 'void)))))
 

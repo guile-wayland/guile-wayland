@@ -10,7 +10,8 @@
   #:use-module (wayland util)
   #:use-module (wayland client)
   #:use-module (wayland interface)
-  #:export (wl-resource?
+  #:export (%wl-resource-struct
+            wl-resource?
             wrap-wl-resource
             unwrap-wl-resource
 
@@ -18,10 +19,10 @@
             wl-resource-get-version
             wl-resource-get-class))
 
-(define-wl-type <wl-resource>
-  %wl-resource %make-wl-resource
-  ---
-  wl-resource? wrap-wl-resource unwrap-wl-resource)
+(define %wl-resource-struct (bs:unknow))
+(define-bytestructure-class <wl-resource> ()
+  %wl-resource-struct
+  wrap-wl-resource unwrap-wl-resource wl-resource?)
 
 (define %wl-resource-create
   (wayland-server->procedure '* "wl_resource_create" (list '* '* ffi:int ffi:uint32)))

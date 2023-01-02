@@ -33,7 +33,8 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (wl-display?
+  #:export (%wl-display-struct
+            wl-display?
             wrap-wl-display
             unwrap-wl-display
 
@@ -73,11 +74,10 @@
    (wayland-server->pointer "wl_display_interface")))
 
 (define WL_DISPLAY_GET_REGISTRY 1)
-
-(define-wl-type <wl-display>
-  %wl-display %make-wl-display
-  ---
-  wl-display? wrap-wl-display unwrap-wl-display)
+(define %wl-display-struct (bs:unknow))
+(define-bytestructure-class <wl-display> ()
+  %wl-display-struct
+  wrap-wl-display unwrap-wl-display wl-display?)
 
 (define-wl-server-procedure (wl-display-create)
   ('* "wl_display_create" '())

@@ -26,7 +26,8 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (wl-global?
+  #:export (%wl-global-struct
+            wl-global?
             wrap-wl-global
             unwrap-wl-global
 
@@ -34,10 +35,11 @@
             wl-global-remove
             wl-global-destroy))
 
-(define-wl-type <wl-global>
-  %wl-global %make-wl-global
-  ---
-  wl-global? wrap-wl-global unwrap-wl-global)
+(define %wl-global-struct (bs:unknow))
+
+(define-bytestructure-class <wl-global> ()
+  %wl-global-struct
+  wrap-wl-global unwrap-wl-global wl-global?)
 
 (define wl-global-create
   (let ((proc (wayland-server->procedure '* "wl_global_create" (list '* '* ffi:int '* '*))))

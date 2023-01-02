@@ -30,17 +30,18 @@
                                            (uint32 . ffi:uint32)
                                            (size_t . ffi:size_t)
                                            (uintptr_t . ffi:uintptr_t)))
-  #:export (wl-client-create
+  #:export (%wl-client-struct
+            wl-client-create
             wrap-wl-client
             unwrap-wl-client
             wl-client-from-link
             wl-client-get-link
             wl-client-get-display))
 
-(define-wl-type <wl-client>
-  %wl-client %make-wl-client
-  ---
-  wl-client? wrap-wl-client unwrap-wl-client)
+(define %wl-client-struct (bs:unknow))
+(define-bytestructure-class <wl-client> ()
+  %wl-client-struct
+  wrap-wl-client unwrap-wl-client wl-client?)
 
 (define %wl-client-create (wayland-server->procedure '* "wl_client_create" (list '* ffi:int)))
 

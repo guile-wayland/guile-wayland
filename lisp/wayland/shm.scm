@@ -14,8 +14,10 @@
   #:use-module (wayland client)
   #:use-module (wayland resource)
   #:use-module (ice-9 format)
-  #:use-module (bytestructures guile))
+  #:use-module (bytestructures guile)
+  #:export (%wl-shm-buffer-struct))
 
+(define %wl-shm-buffer-struct (bs:unknow))
 (define WL_SHM_CREATE_POOL 0)
 (define %wl-shm-pool-interface-struct
   (bs:struct
@@ -44,10 +46,9 @@
           width height
           stride format)))
 
-(define-wl-type <wl-shm-buffer>
-  %wl-shm-buffer %make-wl-shm-buffer
-  ---
-  wl-shm-buffer? wrap-wl-shm-buffer unwrap-wl-shm-buffer)
+(define-bytestructure-class <wl-shm-buffer> ()
+  %wl-shm-buffer-struct
+  wrap-wl-shm-buffer unwrap-wl-shm-buffer wl-shm-buffer?)
 
 (define %wl-shm-buffer-get
   (wayland-server->procedure '* "wl_shm_buffer_get" '(*)))

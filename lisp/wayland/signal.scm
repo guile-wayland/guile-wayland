@@ -1,4 +1,5 @@
 (define-module (wayland signal)
+  #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (wayland list)
   #:use-module (wayland listener)
@@ -18,36 +19,15 @@
   (define %wl-signal-struct
     (bs:struct `((listener-list ,%wl-list-struct)))))
 
-(define-bytestructure-accessors %wl-signal-struct
-  wl-signal-unwrap wl-signal-ref wl-signal-set!)
+(define-bytestructure-class <wl-signal> ()
+  %wl-signal-struct wrap-wl-signal unwrap-wl-signal wl-signal?
+  (listener-list #:accessor .listener-list))
 
-(define-class <wl-signal> ()
-  (bytevectory #:accessor .bytevectory #:init-keyword #:bytevectory)
-  (listener-list #:allocation #:virtual
-                 #:accessor .listener-list
-                 #:slot-ref (lambda (a)
-                              (wrap-wl-list
-                               (make-pointer (wl-signal-ref
-                                              (.bytevectory a)
-                                              listener-list prev * next))))
-                 #:slot-set! (lambda (instance new-val)
-                               (wl-signal-set!
-                                (.bytevectory instance)
-                                listener-list prev * next
-                                (unwrap-wl-list new-val)))))
-(define (wrap-wl-signal p)
-  (make <wl-signal> #:bytevectory
-        (cond ((pointer? p)
-               (pointer->bytevector p (bytestructure-descriptor-size %wl-signal-struct)))
-              ((bytestructure? p)
-               (bytestructure-bytevector p))
-              (else p))))
 (define (make-wl-signal)
   (wrap-wl-signal
    (make-bytevector
     (bytestructure-descriptor-size %wl-signal-struct))))
-(define (unwrap-wl-signal o)
-  (bytevector->pointer (.bytevectory o)))
+
 (eval-when (expand load eval)
   (load-extension "libguile-wayland" "scm_init_wl_signal"))
 (define* (wl-signal-init #:optional (signal (make-wl-signal)))

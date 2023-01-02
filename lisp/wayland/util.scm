@@ -24,7 +24,6 @@
                                            (uintptr_t . ffi:uintptr_t)))
   #:export (
             char*
-            bytestructure->pointer
             wayland-server->pointer
             wayland-client->pointer
             wayland-client->procedure

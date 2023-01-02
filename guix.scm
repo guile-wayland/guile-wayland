@@ -47,7 +47,12 @@
            texinfo
            guile-3.0-latest))
     (inputs (list guile-3.0-latest wayland))
-    (propagated-inputs (list guile-bytestructures))
+    (propagated-inputs
+     (list
+      (primitive-load
+       (string-append (dirname (dirname (current-filename)))
+                      "/guile-bytestructure-class/guix.scm"))
+      guile-bytestructures))
     (synopsis "")
     (description "")
     (home-page "")

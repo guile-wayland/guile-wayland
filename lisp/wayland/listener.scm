@@ -29,23 +29,11 @@
    `((link ,%wl-list-struct)
      (notify ,wl-notify-func))))
 
-(define-wl-type <wl-listener>
-  %wl-listener %%make-wl-listener
-  ---
-  wl-listener? wrap-wl-listener unwrap-wl-listener)
-
-(define-method (.link (a <wl-listener>))
-  (wrap-wl-list
-   (bytestructure->pointer
-    (bytestructure-ref
-     (pointer->bytestructure (unwrap-wl-listener a)
-                             %wl-listener-struct)
-     'link))))
-(define-method (.notify (a <wl-listener>))
-  (bytestructure-ref
-   (pointer->bytestructure (unwrap-wl-listener a)
-                           %wl-listener-struct)
-   'notify))
+(define-bytestructure-class <wl-listener> ()
+  %wl-listener-struct
+  wrap-wl-listener unwrap-wl-listener wl-listener?
+  (link #:accessor .link)
+  (notify #:accessor .notify))
 
 (define (make-wl-listener
          notify)

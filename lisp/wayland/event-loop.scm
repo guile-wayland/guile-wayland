@@ -26,7 +26,9 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (wrap-wl-event-loop
+  #:export (%wl-event-loop-struct
+            %wl-event-source-struct
+            wrap-wl-event-loop
             unwrap-wl-event-loop
             wl-event-loop?
 
@@ -37,16 +39,16 @@
             wl-event-loop-add-signal
             wl-event-loop-dispatch))
 
-(define-wl-type <wl-event-loop>
-  %wl-event-loop %make-wl-event-loop
-  ---
-  wl-event-loop? wrap-wl-event-loop unwrap-wl-event-loop)
+(define %wl-event-loop-struct (bs:unknow))
+(define %wl-event-source-struct (bs:unknow))
 
-(define-wl-type <wl-event-source>
-  %wl-event-source %make-wl-event-source
-  ---
-  wl-event-source?
-  wrap-wl-event-source unwrap-wl-event-source)
+(define-bytestructure-class <wl-event-loop> ()
+  %wl-event-loop-struct
+  wrap-wl-event-loop unwrap-wl-event-loop wl-event-loop?)
+
+(define-bytestructure-class <wl-event-source> ()
+  %wl-event-source-struct
+  wrap-wl-event-source unwrap-wl-event-source wl-event-source?)
 
 (define (make-interface)
   (bytestructure %wl-interface))
