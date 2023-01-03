@@ -42,6 +42,7 @@ AC_CHECK_HEADERS([libguile.h])
 # Checks for typedefs, structures, and compiler characteristics.
 LT_INIT([dlopen])
 GUILE_MODULE_REQUIRED([bytestructures guile])
+GUILE_MODULE_REQUIRED([bytestructure-class])
 dnl LT_CONFIG_LTDL_DIR([libltdl])
 dnl LTDL_INIT
 # Checks for library functions.
