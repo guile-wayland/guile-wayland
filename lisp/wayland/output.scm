@@ -1,11 +1,17 @@
 (define-module (wayland output)
   #:use-module (wayland interface)
+  #:use-module (bytestructure-class)
   #:use-module (oop goops)
   #:use-module (wayland util)
   #:export (%wl-output-interface
             %wl-output-struct))
 
 (define %wl-output-struct (bs:unknow))
+
+(define-bytestructure-class <wl-output> ()
+  %wl-output-struct
+  wrap-wl-output unwrap-wl-output wl-output?)
+
 (define %wl-output-interface-struct
   (bs:struct `((release ,(bs:pointer 'void)))))
 

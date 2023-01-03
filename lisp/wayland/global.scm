@@ -2,6 +2,8 @@
   #:use-module (ice-9 format)
   #:use-module (wayland config)
   #:use-module (wayland interface)
+  #:use-module (wayland display)
+  #:use-module (wayland client)
   #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module ((system foreign) #:select (null-pointer?

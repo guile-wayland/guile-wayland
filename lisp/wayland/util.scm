@@ -1,6 +1,7 @@
 (define-module (wayland util)
   #:use-module (wayland config)
   #:use-module (bytestructures guile)
+  #:use-module (bytestructure-class)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -17,18 +18,15 @@
                                            dereference-pointer
                                            define-wrapped-pointer-type
                                            pointer-address
-                                           void
-                                           (int . ffi:int)
-                                           (double . ffi:double)
-                                           (size_t . ffi:size_t)
-                                           (uintptr_t . ffi:uintptr_t)))
-  #:export (
-            char*
+                                           void))
+  #:re-export (bytestructure->pointer
+               pointer->bytestructure)
+  #:export (char*
             wayland-server->pointer
             wayland-client->pointer
             wayland-client->procedure
             wayland-server->procedure
-            pointer->bytestructure
+
             make-pointer->string
             string->pointer-address
             %wl-array
@@ -66,15 +64,6 @@
        #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
 
 (define char* (bs:pointer int8))
-
-(define (bytestructure->pointer b)
-  (bytevector->pointer (bytestructure-bytevector b)
-                       (bytestructure-offset b)))
-
-(define (pointer->bytestructure pointer struct)
-  (make-bytestructure (pointer->bytevector pointer (bytestructure-descriptor-size struct))
-                      0
-                      struct))
 
 (define make-pointer->string (compose (lambda (a) (if (null-pointer? a)
                                                       ""
