@@ -29,7 +29,7 @@
 
             make-pointer->string
             string->pointer-address
-            %wl-array
+            %wl-array-struct
             wl-container-of
             wl-log-set-handler-server)
   #:export-syntax (define-wl-server-procedure))
@@ -71,10 +71,10 @@
 
 (define string->pointer-address (compose pointer-address string->pointer))
 
-(define %wl-array
+(define %wl-array-struct
   (bs:struct `((size ,size_t)
                (alloc ,size_t)
-               (data ,(bs:pointer void)))))
+               (data ,(bs:pointer 'void)))))
 
 (define (wl-log-set-handler-server proc)
   (wayland-server->procedure void "wl_log_set_handler_server" '(*))
