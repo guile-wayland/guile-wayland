@@ -46,6 +46,7 @@ SOURCES = ../wayland.scm \
  global.scm          \
  interface.scm       \
  keyboard.scm        \
+ protocol.scm        \
  list.scm            \
  listener.scm        \
  output.scm          \
@@ -57,3 +58,5 @@ SOURCES = ../wayland.scm \
  signal.scm          \
  touch.scm           \
  util.scm
+protocol.scm:
+	$(top_srcdir)/build-aux/wayland-scanner-guile > $@
