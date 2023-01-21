@@ -19,6 +19,8 @@
             wl-list-length
             wl-list-empty
             make-wl-list
+            wl-list-for-each
+            wl-list-for-each-reverse
             .prev
             .next))
 
@@ -84,3 +86,20 @@
                             ((0) #f)
                             ((1) #t)
                             (else (error ))) )
+
+(define* (make-wl-list-for-each #:optional (to-next .next))
+  (lambda (proc wl-list bs member)
+    (let ((bs (if (bytestructure-descriptor? bs)
+                  bs
+                  (.descriptor bs))))
+      (let loop ((wl-list* (to-next wl-list))
+                 (obj (wl-container-of (to-next wl-list) bs member)))
+        (unless (eq? wl-list wl-list*)
+          (begin
+            (proc obj wl-list*)
+            (loop (to-next wl-list*)
+                  (wl-container-of (to-next wl-list*) bs member))))))))
+(define-method (wl-list-for-each (proc <procedure>) (wl-list <wl-list>) bs (member <symbol>))
+  ((make-wl-list-for-each) proc wl-list bs member))
+(define-method (wl-list-for-each-reverse (proc <procedure>) (wl-list <wl-list>) bs (member <symbol>))
+  ((make-wl-list-for-each .prev) proc wl-list bs member))
