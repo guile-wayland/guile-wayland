@@ -81,11 +81,16 @@
   (procedure->pointer 'void (lambda (a b) (proc (pointer->string a) b)) (list '* '*)))
 
 (define (wl-container-of ptr sample member)
-  (pointer->bytestructure
-   (make-pointer
-    (- (pointer-address ptr)
-       (bytestructure-offset
-        (bytestructure-ref
-         (bytestructure sample)
-         member))))
-   sample))
+  (let ((bs (if (bytestructure-descriptor? sample)
+                sample
+                (.descriptor sample))))
+
+    (bytestructure->bs-instance
+     (pointer->bytestructure
+      (make-pointer
+       (- (pointer-address (get-pointer ptr))
+          (bytestructure-offset
+           (bytestructure-ref
+            (bytestructure bs)
+            member))))
+      bs))))
