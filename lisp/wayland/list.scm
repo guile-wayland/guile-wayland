@@ -21,6 +21,7 @@
             make-wl-list
             wl-list-for-each
             wl-list-for-each-reverse
+            wl-list->list
             .prev
             .next))
 
@@ -103,3 +104,9 @@
   ((make-wl-list-for-each) proc wl-list bs member))
 (define-method (wl-list-for-each-reverse (proc <procedure>) (wl-list <wl-list>) bs (member <symbol>))
   ((make-wl-list-for-each .prev) proc wl-list bs member))
+(define (wl-list->list wlist bs member)
+  (let ((n '()))
+    (wl-list-for-each
+     (lambda (obj wl) (set! n (cons obj n)))
+     wlist bs member)
+    n))
