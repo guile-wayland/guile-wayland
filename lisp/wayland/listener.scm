@@ -14,6 +14,7 @@
             wrap-wl-listener
             unwrap-wl-listener
             make-wl-listener
+            wl-listener-remove
             .link
             .notify))
 
@@ -21,9 +22,7 @@
   (load-extension "libguile-wayland" "scm_init_wl_listener"))
 
 (define wl-notify-func
-  (bs:pointer
-   (delay (bs:struct `((listener ,%wl-listener-struct)
-                       (data ,(bs:pointer 'void)))))))
+  (bs:pointer '*))
 (define %wl-listener-struct
   (bs:struct
    `((link ,%wl-list-struct)
@@ -32,6 +31,7 @@
 (define-bytestructure-class <wl-listener> ()
   %wl-listener-struct
   wrap-wl-listener unwrap-wl-listener wl-listener?
+  (%notify-pointer #:allocation #:instance #:init-value #f)
   (link #:accessor .link)
   (notify #:accessor .notify))
 
