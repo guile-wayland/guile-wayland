@@ -96,7 +96,8 @@
        (proc
         (unwrap-wl-event-loop loop)
         (procedure->pointer ffi:int
-                            (lambda (a) (func a))
+                            (lambda (a)
+                              (if (func a) 0 1))
                             '(*))
         data)))))
 
