@@ -37,6 +37,7 @@
             wl-event-loop-add-timer
             wl-event-loop-add-fd
             wl-event-loop-add-signal
+            wl-event-source-timer-update
             wl-event-loop-dispatch))
 
 (define %wl-event-loop-struct (bs:unknow))
@@ -119,8 +120,10 @@
    (list '*)))
 
 (define wl-event-source-timer-update
-  (wayland-server->procedure
-   ffi:int "wl_event_source_timer_update" (list '* ffi:int )))
+  (let ((proc (wayland-server->procedure
+               ffi:int "wl_event_source_timer_update" (list '* ffi:int ))))
+    (lambda (source delay)
+      (zero? (proc (unwrap-wl-event-source source) delay)))))
 
 (define wl-event-source-remove
   (compose (wayland-server->procedure
