@@ -38,12 +38,6 @@
   (prev #:accessor .prev)
   (next #:accessor .next))
 
-(define-method (write (o <wl-list>) port)
-  (format port "#<~s ~a ~x>"
-          (class-name (class-of o))
-          (wl-list-length o)
-          (pointer-address (get-pointer o))))
-
 (define (make-wl-list)
   (let ((o(wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct)))))
     (wl-list-init o)
