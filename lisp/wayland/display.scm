@@ -34,9 +34,13 @@
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
   #:export (%wl-display-struct
+            %wl-client-display-struct
             wl-display?
+            wl-client-display?
             wrap-wl-display
+            wrap-wl-client-display
             unwrap-wl-display
+            unwrap-wl-client-display
 
             wl-display-create
             wl-display-add-socket
@@ -75,9 +79,14 @@
 
 (define WL_DISPLAY_GET_REGISTRY 1)
 (define %wl-display-struct (bs:unknow))
+(define %wl-client-display-struct (bs:unknow))
 (define-bytestructure-class <wl-display> ()
   %wl-display-struct
   wrap-wl-display unwrap-wl-display wl-display?)
+
+(define-bytestructure-class <wl-client-display> ()
+  %wl-client-display-struct
+  wrap-wl-client-display unwrap-wl-client-display wl-client-display?)
 
 (define-wl-server-procedure (wl-display-create)
   ('* "wl_display_create" '())
@@ -156,7 +165,7 @@
               (if name (string->pointer name) %null-pointer))))
     (if (null-pointer? out)
         (error "not connect!")
-        (wrap-wl-display out))))
+        (wrap-wl-client-display out))))
 
 (define (wl-display-connect-to-fd fd)
   "if success, return wl-display else #f."
@@ -164,14 +173,14 @@
               fd)))
     (if (null-pointer? out)
         #f
-        (wrap-wl-display out))))
+        (wrap-wl-client-display out))))
 
 (define %wl-display-disconnect (wayland-client->procedure void "wl_display_disconnect" '(*)))
 (define (wl-display-disconnect w-display)
-  (unless (wl-display? w-display)
+  (unless (wl-client-display? w-display)
     (error "error display:" w-display))
   (%wl-display-disconnect
-   (unwrap-wl-display w-display)))
+   (unwrap-wl-client-display w-display)))
 
 (define (wl-display-get-fd display)
   ((wayland-client->procedure ffi:int "wl_display_get_fd" '(*))
@@ -187,16 +196,18 @@
 
 (define (wl-display-dispatch display)
   (%wl-display-dispatch
-   (unwrap-wl-display display)))
+   (unwrap-wl-client-display display)))
 
 (define (wl-display-roundtrip display)
   ((wayland-client->procedure ffi:int "wl_display_roundtrip" '(*))
-   (unwrap-wl-display display)))
+   (unwrap-wl-client-display display)))
 
 (define %wl-display-read-events
   (wayland-client->procedure ffi:int "wl_display_read_events" '(*)))
 (define (wl-display-read-events display)
-  (%wl-display-read-events (unwrap-wl-display display)))
+  (%wl-display-read-events (unwrap-wl-client-display display)))
+
 (define %wl-display-flush (wayland-client->procedure ffi:int "wl_display_flush" '(*)))
+
 (define (wl-display-flush w-display)
-  (%wl-display-flush (unwrap-wl-display w-display)))
+  (%wl-display-flush (unwrap-wl-client-display w-display)))
