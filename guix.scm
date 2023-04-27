@@ -15,20 +15,7 @@
  (gnu packages texinfo)
  (gnu packages file)
  (gnu packages build-tools))
-(define wayland-next
-  (package
-    (inherit wayland)
-    (name "wayland")
-    (version "1.21.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.freedesktop.org/wayland/wayland")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0fwad6w5jm32c04wh4gca7d1ixdj4b9dnsiy1h6qd9nxs0w47wwy"))))))
+
 (define guile-wayland
   (package
     (name "guile-wayland")
@@ -60,7 +47,7 @@
            pkg-config
            texinfo
            guile-3.0-latest))
-    (inputs (list guile-3.0-latest wayland-next))
+    (inputs (list guile-3.0-latest wayland))
     (propagated-inputs
      (list
       (primitive-load
@@ -71,7 +58,5 @@
     (description "")
     (home-page "")
     (license license:gpl3+)))
+
 guile-wayland
-;; (list
-;;  info-reader
-;;  bear)
