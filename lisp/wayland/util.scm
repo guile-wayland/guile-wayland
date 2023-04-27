@@ -21,8 +21,7 @@
                                            void))
   #:re-export (bytestructure->pointer
                pointer->bytestructure)
-  #:export (char*
-            wayland-server->pointer
+  #:export (wayland-server->pointer
             wayland-client->pointer
             wayland-client->procedure
             wayland-server->procedure
@@ -62,8 +61,6 @@
                    body ...))))))
       ((o-name (name args ...) (return-type cname arg-types))
        #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
-
-(define char* (bs:pointer int8))
 
 (define make-pointer->string (compose (lambda (a) (if (null-pointer? a)
                                                       ""
