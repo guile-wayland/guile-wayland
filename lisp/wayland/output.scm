@@ -25,7 +25,7 @@
 (define %wl-output-interface
   (pointer->bytestructure
    (wayland-server->pointer "wl_output_interface")
-   %wl-interface))
+   %wl-interface-struct))
 
 
 

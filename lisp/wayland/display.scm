@@ -74,7 +74,7 @@
 ;;   (bs:struct `((sync ,(bs:pointer 'void))
 ;;                (get-registry ,(bs:pointer 'void)))))
 (define %wl-display-interface
-  (pointer->wl-interface
+  (wrap-wl-interface
    (wayland-server->pointer "wl_display_interface")))
 
 (define WL_DISPLAY_GET_REGISTRY 1)
@@ -190,7 +190,7 @@
   (wrap-wl-registry (wl-proxy-marshal-constructor
                      display
                      WL_DISPLAY_GET_REGISTRY
-                     (wl-interface->pointer %wl-registry-interface))))
+                     (unwrap-wl-interface %wl-registry-interface))))
 
 (define %wl-display-dispatch (wayland-client->procedure ffi:int "wl_display_dispatch" '(*)))
 

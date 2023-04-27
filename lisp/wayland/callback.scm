@@ -5,4 +5,4 @@
 (define-public wl-callback-interface
   (pointer->bytestructure
    (wayland-server->pointer "wl_callback_interface")
-   %wl-interface))
+   %wl-interface-struct))

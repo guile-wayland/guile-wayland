@@ -38,7 +38,7 @@
 (define WL_REGISTRY_BIND 0)
 
 (define-public %wl-registry-interface
-  (pointer->wl-interface
+  (wrap-wl-interface
    (wayland-server->pointer "wl_registry_interface")))
 
 (define-class <wl-registry> (<wl-proxy>))
@@ -105,6 +105,6 @@
    interface version
 
    name
-   (wl-interface-name interface)
+   (.name interface)
    version
    %null-pointer))

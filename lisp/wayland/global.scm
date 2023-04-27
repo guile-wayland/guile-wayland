@@ -67,4 +67,4 @@
 
 (define %wl-global-get-interface (wayland-server->procedure '* "wl_global_get_interface" '(*)))
 (define (wl-global-get-interface global)
-  (pointer->wl-interface (%wl-global-get-interface (unwrap-wl-global global))))
+  (wrap-wl-interface (%wl-global-get-interface (unwrap-wl-global global))))

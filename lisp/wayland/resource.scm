@@ -28,7 +28,7 @@
   (wayland-server->procedure '* "wl_resource_create" (list '* '* ffi:int ffi:uint32)))
 (define (wl-resource-create client interface version id)
   (wrap-wl-resource (%wl-resource-create (unwrap-wl-client client)
-                                         (wl-interface->pointer interface)
+                                         (unwrap-wl-interface interface)
                                          version
                                          id)))
 

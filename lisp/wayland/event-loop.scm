@@ -51,9 +51,6 @@
   %wl-event-source-struct
   wrap-wl-event-source unwrap-wl-event-source wl-event-source?)
 
-(define (make-interface)
-  (bytestructure %wl-interface))
-
 (define wl-event-loop-create
   (compose wrap-wl-event-loop
            (wayland-server->procedure
