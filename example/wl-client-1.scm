@@ -4,9 +4,10 @@
 
 
 (define (main . _)
-  (let* ((w-display (wl-display-connect (getenv "WAYLAND_DISPLAY"))))
+  (let* ((w-display (wl-display-connect)))
     (unless w-display
       (display "Unable to connect to wayland compositor")
+      (newline)
       (exit -1))
     (display "connect to wayland compositor: ")
     (display w-display)
