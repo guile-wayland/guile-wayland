@@ -1,3 +1,7 @@
+lisp/wayland/protocol.scm
+.libs/
+.deps/
+*.x
 *.eps
 *.go
 *.log
@@ -10,10 +14,17 @@
 .#*
 \#*\#
 ,*
+*.la
+*.lo
+*.o
+/libtool
+/config.h
+/compile_commands.json
 /ABOUT-NLS
 /INSTALL
 /aclocal.m4
 /autom4te.cache
+/build-aux/ltmain.sh
 /build-aux/ar-lib
 /build-aux/compile
 /build-aux/config.guess
