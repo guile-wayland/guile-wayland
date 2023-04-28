@@ -31,7 +31,8 @@
             %wl-array-struct
             wl-container-of
             wl-log-set-handler-server)
-  #:export-syntax (define-wl-server-procedure))
+  #:export-syntax ( define-wl-server-procedure
+                    define-wl-client-procedure))
 
 ;; (define-syntax-rule (define-callback name)
 ;;   (define name ))
@@ -57,6 +58,19 @@
          #'(begin
              (define name
                (let ((% (wayland-server->procedure return-type cname arg-types)))
+                 (lambda* (args ...)
+                   body ...))))))
+      ((o-name (name args ...) (return-type cname arg-types))
+       #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
+
+(define-syntax define-wl-client-procedure
+  (lambda (x)
+    (syntax-case x ()
+      ((_ (name args ...) (return-type cname arg-types) body ...)
+       (with-syntax ((% (datum->syntax x '%)))
+         #'(begin
+             (define name
+               (let ((% (wayland-client->procedure return-type cname arg-types)))
                  (lambda* (args ...)
                    body ...))))))
       ((o-name (name args ...) (return-type cname arg-types))
