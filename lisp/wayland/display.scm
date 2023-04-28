@@ -159,12 +159,11 @@
 
 ;; client
 
-(define* (wl-display-connect #:optional (name #f))
-  "if success, return wl-display else #f."
-  (let ((out ((wayland-client->procedure '* "wl_display_connect" '(*))
-              (if name (string->pointer name) %null-pointer))))
+(define-wl-client-procedure (wl-display-connect #:optional (name #f))
+  ('* "wl_display_connect" '(*))
+  (let ((out (% (if name (string->pointer name) %null-pointer))))
     (if (null-pointer? out)
-        (error "not connect!")
+        #f
         (wrap-wl-client-display out))))
 
 (define (wl-display-connect-to-fd fd)
