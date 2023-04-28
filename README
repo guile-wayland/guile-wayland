@@ -1,6 +1,10 @@
+# -*- mode: org; -*-
 guile-wayland.
 
 This is a WIP project.
+
+for now, provide some wayland-server api, use by guile-wlroots.
+
 
 * NOTE
 
@@ -8,6 +12,10 @@ NOTE: please use =wl-listener-remove= to remove =make-wl-listener= created =<wl-
 
 =make-wl-listener= use =scm_gc_protect_object= and =scm_calloc= to create =<wl-listener>=, =wl-listener-remove= wail unprotect and free it.
 
-# Local Variables:
-# mode: org
-# End:
+* dep
+
+autoconf, automake, libtool, pkg-config, texinfo, guile
+wayland
+guile-bytestructures, guile-bytestructure-class
+* license
+GPL3+
