@@ -34,6 +34,7 @@
             wl-client-create
             wrap-wl-client
             unwrap-wl-client
+            wl-client-add-destroy-listener
             wl-client-from-link
             wl-client-get-link
             wl-client-get-display))
@@ -55,6 +56,10 @@
 (define %wl-client-get-link (wayland-server->procedure '* "wl_client_get_link" '(*)))
 (define (wl-client-get-link client)
   (wrap-wl-list (%wl-client-get-link (unwrap-wl-client client))))
+
+(define-wl-server-procedure (wl-client-add-destroy-listener client listener)
+  (void "wl_client_add_destroy_listener" '(* *))
+  (% (unwrap-wl-client client) (unwrap-wl-listener listener)))
 
 (define %wl-client-from-link (wayland-server->procedure '* "wl_client_from_link" '(*)))
 

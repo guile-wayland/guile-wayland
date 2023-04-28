@@ -16,11 +16,17 @@
         (exit 1))
       (format #t "Running Wayland display on ~S\n" socket))
 
-    (let ((client-created-listener
-           (make-wl-listener
-            (lambda (listener pointer)
-              (let ((wc (wrap-wl-client pointer)))
-                (display "New client: ") (display wc) (newline))))))
+    (let* ((client-destroy-listener
+            (make-wl-listener
+             (lambda (listener pointer)
+               (let ((wc (wrap-wl-client pointer)))
+                 (display "Client destroy: ") (display wc) (newline)))))
+           (client-created-listener
+            (make-wl-listener
+             (lambda (listener pointer)
+               (let ((wc (wrap-wl-client pointer)))
+                 (wl-client-add-destroy-listener wc client-destroy-listener)
+                 (display "New client: ") (display wc) (newline))))))
       (wl-display-add-client-created-listener
        w-display client-created-listener))
     (wl-display-run w-display)
