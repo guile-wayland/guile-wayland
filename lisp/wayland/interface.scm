@@ -35,9 +35,9 @@
    `((name ,cstring-pointer)
      (version ,int)
      (method-count ,int)
-     (methods ,(bs:pointer %wl-message-struct))
+     (methods ,(bs:pointer '*))
      (event-count ,int)
-     (events ,(bs:pointer %wl-message-struct)))))
+     (events ,(bs:pointer '*)))))
 
 (define-bytestructure-class <wl-interface> ()
   %wl-interface-struct
@@ -45,6 +45,31 @@
   (name #:accessor .name)
   (version #:accessor .version)
   (method-count #:accessor .method-count)
-  (methods #:accessor .methods )
+  (methods #:accessor .methods
+           #:allocation #:virtual
+           #:slot-ref
+           (lambda (o)
+             (let* ((bs (get-bytestructure o))
+                    (method-count (bytestructure-ref bs 'method-count))
+                    (methods (pointer->bytestructure
+                              (make-pointer (bytestructure-ref bs 'methods))
+                              (bs:vector method-count %wl-message-struct))))
+               (map (lambda (n) (wrap-wl-message
+                                 (bytestructure-ref methods n)))
+                    (iota method-count))))
+           #:slot-set! (const #f))
   (event-count #:accessor .event-count)
-  (events #:accessor .events))
+  (events #:allocation #:virtual
+          #:slot-ref
+          (lambda (o)
+            (let* ((bs (get-bytestructure o))
+                   (event-count (bytestructure-ref bs 'event-count))
+                   (events (pointer->bytestructure
+                            (make-pointer (bytestructure-ref bs 'events))
+                            (bs:vector event-count %wl-message-struct))))
+              (map (lambda (n)
+                     (wrap-wl-message
+                      (bytestructure-ref events n)))
+                   (iota event-count))))
+          #:slot-set! (const #f)
+          #:accessor .events))
