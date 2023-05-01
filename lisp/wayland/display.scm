@@ -181,9 +181,9 @@
   (%wl-display-disconnect
    (unwrap-wl-client-display w-display)))
 
-(define (wl-display-get-fd display)
-  ((wayland-client->procedure ffi:int "wl_display_get_fd" '(*))
-   (unwrap-wl-display display)))
+(define-wl-client-procedure (wl-display-get-fd display)
+  (ffi:int "wl_display_get_fd" '(*))
+  (% (unwrap-wl-client-display display)))
 
 (define (wl-display-get-registry display)
   (wrap-wl-registry (wl-proxy-marshal-constructor
