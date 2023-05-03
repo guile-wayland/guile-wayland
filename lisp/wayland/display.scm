@@ -35,6 +35,7 @@
   #:use-module (bytestructures guile)
   #:export (%wl-display-struct
             %wl-client-display-struct
+            %wl-display-interface
             wl-display?
             wl-client-display?
             wrap-wl-display
