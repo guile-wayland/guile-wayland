@@ -167,20 +167,17 @@
         #f
         (wrap-wl-client-display out))))
 
-(define (wl-display-connect-to-fd fd)
+(define-wl-client-procedure (wl-display-connect-to-fd fd)
+  ('* "wl_display_connect_to_fd" (list ffi:int))
   "if success, return wl-display else #f."
-  (let ((out ((wayland-client->procedure '* "wl_display_connect_to_fd" (list ffi:int))
-              fd)))
+  (let ((out (% fd)))
     (if (null-pointer? out)
         #f
         (wrap-wl-client-display out))))
 
-(define %wl-display-disconnect (wayland-client->procedure void "wl_display_disconnect" '(*)))
-(define (wl-display-disconnect w-display)
-  (unless (wl-client-display? w-display)
-    (error "error display:" w-display))
-  (%wl-display-disconnect
-   (unwrap-wl-client-display w-display)))
+(define-wl-client-procedure (wl-display-disconnect w-display)
+  (void "wl_display_disconnect" '(*))
+  (% (unwrap-wl-client-display w-display)))
 
 (define-wl-client-procedure (wl-display-get-fd display)
   (ffi:int "wl_display_get_fd" '(*))
@@ -192,22 +189,18 @@
                      WL_DISPLAY_GET_REGISTRY
                      (unwrap-wl-interface %wl-registry-interface))))
 
-(define %wl-display-dispatch (wayland-client->procedure ffi:int "wl_display_dispatch" '(*)))
+(define-wl-client-procedure (wl-display-dispatch display)
+  (ffi:int "wl_display_dispatch" '(*))
+  (% (unwrap-wl-client-display display)))
 
-(define (wl-display-dispatch display)
-  (%wl-display-dispatch
-   (unwrap-wl-client-display display)))
+(define-wl-client-procedure (wl-display-roundtrip display)
+  (ffi:int "wl_display_roundtrip" '(*))
+  (% (unwrap-wl-client-display display)))
 
-(define (wl-display-roundtrip display)
-  ((wayland-client->procedure ffi:int "wl_display_roundtrip" '(*))
-   (unwrap-wl-client-display display)))
+(define-wl-client-procedure (wl-display-read-events display)
+  (ffi:int "wl_display_read_events" '(*))
+  (% (unwrap-wl-client-display display)))
 
-(define %wl-display-read-events
-  (wayland-client->procedure ffi:int "wl_display_read_events" '(*)))
-(define (wl-display-read-events display)
-  (%wl-display-read-events (unwrap-wl-client-display display)))
-
-(define %wl-display-flush (wayland-client->procedure ffi:int "wl_display_flush" '(*)))
-
-(define (wl-display-flush w-display)
-  (%wl-display-flush (unwrap-wl-client-display w-display)))
+(define-wl-client-procedure (wl-display-flush w-display)
+  (ffi:int "wl_display_flush" '(*))
+  (% (unwrap-wl-client-display w-display)))
