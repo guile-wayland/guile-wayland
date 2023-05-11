@@ -30,7 +30,7 @@ libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
 lib_LTLIBRARIES = libguile-wayland.la
 $(SOURCES):  $(lib_LTLIBRARIES)
-libguile_wayland_la_SOURCES=signal.c listener.c
+libguile_wayland_la_SOURCES=listener.c
 SOURCES = ../wayland.scm \
  base.scm            \
  argument.scm        \

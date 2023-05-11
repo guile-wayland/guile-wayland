@@ -28,8 +28,9 @@
    (make-bytevector
     (bytestructure-descriptor-size %wl-signal-struct))))
 
-(eval-when (expand load eval)
-  (load-extension "libguile-wayland" "scm_init_wl_signal"))
+(define (wl-signal-add signal listener)
+  (wl-list-insert (.prev (.listener-list signal)) (.link listener)))
+
 (define* (wl-signal-init #:optional (signal (make-wl-signal)))
   (wl-list-init (.listener-list signal))
   signal)
