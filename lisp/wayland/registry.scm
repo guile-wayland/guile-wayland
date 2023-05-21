@@ -84,6 +84,7 @@
                                        '* ffi:uint32)))
     o))
 
+(define-public wl-registry-destroy wl-proxy-destroy)
 (define-method (wl-registry-add-listener (registry <wl-registry>) listener data)
   (wl-proxy-add-listener
    registry

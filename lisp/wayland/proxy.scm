@@ -18,6 +18,7 @@
             wrap-wl-proxy
             wl-proxy-get-class
             wl-proxy-add-listener
+            wl-proxy-destroy
             wl-proxy-marshal-constructor
             wl-proxy-marshal-constructor-versioned
             wl-proxy-get-user-data
@@ -60,6 +61,11 @@
    '*
    "wl_proxy_marshal_constructor_versioned"
    (list '* ffi:uint32 '* ffi:uint32 ffi:uint32 '* ffi:uint32 '*)))
+
+(define-wl-client-procedure (wl-proxy-destroy p)
+  (void "wl_proxy_destroy" '(*))
+  (% (unwrap-wl-proxy p)))
+
 (define-method (wl-proxy-marshal-constructor-versioned (proxy <wl-proxy>) opcode interface version . other)
   (apply %wl-proxy-marshal-constructor-versioned
          (unwrap-wl-proxy proxy)
