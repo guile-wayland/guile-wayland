@@ -68,6 +68,7 @@
 
 "wl_client_get_credentials"
 (define wl-event-queue-destroy (wayland-client->procedure void "wl_event_queue_destroy" '(*)))
+
 (define wl-client-get-object
   (let ((proc (wayland-server->procedure '* "wl_client_get_object" (list '* ffi:uint32))))
     (lambda (a b)
@@ -92,6 +93,8 @@
   (let ((proc (wayland-server->procedure void "wl_client_for_each_resource" (list '* '*))))
     (lambda (client iterator)
       (proc (unwrap-wl-client client) iterator))))
+
 (define %wl-client-get-display (wayland-server->procedure '* "wl_client_get_display" '(*)))
+
 (define (wl-client-get-display client)
   (wrap-wl-display (%wl-client-get-display (unwrap-wl-client client))))

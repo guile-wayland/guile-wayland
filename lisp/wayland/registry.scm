@@ -23,6 +23,7 @@
                                            (double . ffi:double)
                                            (size_t . ffi:size_t)
                                            (uintptr_t . ffi:uintptr_t)))
+  #:use-module (bytestructure-class)
   #:use-module (bytestructures guile)
   #:export (WL_REGISTRY_BIND
             %wl-registry-interface
@@ -41,54 +42,53 @@
   (wrap-wl-interface
    (wayland-server->pointer "wl_registry_interface")))
 
-(define-class <wl-registry> (<wl-proxy>))
-(define (wrap-wl-registry p)
-  (make <wl-registry> #:pointer p))
+(define %wl-registry-struct (bs:unknow))
+(define-bytestructure-class <wl-registry> (<wl-proxy>)
+  %wl-registry-struct
+  wrap-wl-registry unwrap-wl-registry wl-registry?)
 
 (define %wl-registry-listener
   (bs:struct
-   `((global ,(bs:pointer 'void))
-     (global-remove ,(bs:pointer 'void)))))
+   `((global ,(bs:pointer '*))
+     (global-remove ,(bs:pointer '*)))))
 
-(define-record-type <wl-registry-listener>
-  (%make-wl-registry-listener bytestructure)
-  wl-registry-listener?
-  (bytestructure wl-registry-listener-bytestructure))
-
-(define (wl-registry-listener->pointer listener)
-  (bytestructure->pointer (wl-registry-listener-bytestructure listener)))
+(define-bytestructure-class <wl-registry-listener> ()
+  %wl-registry-listener
+  wrap-wl-registry-listener unwrap-wl-registry-listener wl-registry-listener?
+  (global #:accessor .global)
+  (global-remove #:accessor .global-remove))
 
 (define (make-wl-registry-listener global global-remove)
   "global need registry "
-  (%make-wl-registry-listener
-   (bytestructure %wl-registry-listener
-                  `((global ,(procedure->pointer
-                              void
-                              (lambda (data registry name interface version)
-                                (global data
+  (let ((o (make <wl-registry-listener>)))
+    (slot-set! o 'global (procedure->pointer
+                          void
+                          (lambda (data registry name interface version)
+                            (global data
 
-                                        (wrap-wl-registry registry)
-                                        (make-pointer->string name)
-                                        (pointer->string interface)
-                                        version
-                                        ))
-                              (list '* '* ffi:uint32 '* ffi:uint32)))
-                    (global-remove ,(procedure->pointer
-                                     void
-                                     (lambda (data registry name)
-                                       (global-remove
+                                    (wrap-wl-registry registry)
+                                    (make-pointer->string name)
+                                    (pointer->string interface)
+                                    version
+                                    ))
+                          (list '* '* ffi:uint32 '* ffi:uint32)))
+    (slot-set! o 'global-remove (procedure->pointer
+                                 void
+                                 (lambda (data registry name)
+                                   (global-remove
 
-                                        data
-                                        (wrap-wl-registry registry)
-                                        (make-pointer->string name)))
-                                     (list '*
-                                           '* ffi:uint32)))))))
+                                    data
+                                    (wrap-wl-registry registry)
+                                    (make-pointer->string name)))
+                                 (list '*
+                                       '* ffi:uint32)))
+    o))
 
 (define-method (wl-registry-add-listener (registry <wl-registry>) listener data)
   (wl-proxy-add-listener
    registry
    (if (wl-registry-listener? listener)
-       (wl-registry-listener->pointer listener)
+       (unwrap-wl-registry-listener listener)
        listener)
    data))
 (define-method (wl-registry-add-listener (registry <wl-registry>) listener )

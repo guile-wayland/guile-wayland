@@ -1,7 +1,9 @@
 (define-module (wayland proxy)
   #:use-module (ice-9 format)
   #:use-module (wayland util)
+  #:use-module (bytestructure-class)
   #:use-module (oop goops)
+  #:use-module (wayland interface)
   #:use-module ((system foreign) #:select (void
                                            make-pointer
                                            %null-pointer
@@ -11,8 +13,8 @@
                                            define-wrapped-pointer-type
                                            (uint32 . ffi:uint32)
                                            (int . ffi:int)))
-  #:export (<wl-proxy>
-            .pointer
+  #:export (%wl-proxy-struct
+            <wl-proxy>
             wrap-wl-proxy
             wl-proxy-get-class
             wl-proxy-add-listener
@@ -27,21 +29,20 @@
 ;;   (lambda (b p)
 ;;     (format p "#<wl-proxy ~x>" (pointer-address (unwrap-wl-proxy b)))))
 
-(define-class <wl-proxy> ()
-  (pointer #:accessor .pointer #:init-keyword #:pointer))
+(define %wl-proxy-struct (bs:unknow))
+(define-bytestructure-class <wl-proxy> ()
+  %wl-proxy-struct
+  wrap-wl-proxy unwrap-wl-proxy wl-proxy?)
 
-(define (wrap-wl-proxy p)
-  (make <wl-proxy> #:pointer p))
-(define wl-proxy->pointer .pointer)
 (define %wl-proxy-create (wayland-client->procedure '* "wl_proxy_create" '(* *)))
 
 (define-method (wl-proxy-create (factory <wl-proxy>) interface)
-  (make <wl-proxy> #:pointer (%wl-proxy-create (.pointer factory)
-                                               interface)))
+  (wrap-wl-proxy (%wl-proxy-create (unwrap-wl-proxy factory)
+                                   interface)))
 
 (define %wl-proxy-get-class (wayland-client->procedure '* "wl_proxy_get_class" '(*)))
 (define-method (wl-proxy-get-class (proxy <wl-proxy>))
-  (pointer->string (%wl-proxy-get-class (.pointer proxy))))
+  (pointer->string (%wl-proxy-get-class (unwrap-wl-proxy proxy))))
 (define %wl-proxy-marshal-constructor
   (wayland-client->procedure
    '*
@@ -50,7 +51,7 @@
 
 (define-method (wl-proxy-marshal-constructor (proxy <wl-proxy>) opcode interface)
   (%wl-proxy-marshal-constructor
-   (.pointer proxy)
+   (unwrap-wl-proxy proxy)
    opcode
    interface))
 
@@ -61,7 +62,7 @@
    (list '* ffi:uint32 '* ffi:uint32 ffi:uint32 '* ffi:uint32 '*)))
 (define-method (wl-proxy-marshal-constructor-versioned (proxy <wl-proxy>) opcode interface version . other)
   (apply %wl-proxy-marshal-constructor-versioned
-         (.pointer proxy)
+         (unwrap-wl-proxy proxy)
          opcode
          interface
          version
@@ -71,28 +72,30 @@
   (wayland-client->procedure ffi:int "wl_proxy_add_listener" (list '* '* '*)))
 (define-method (wl-proxy-add-listener (proxy <wl-proxy>) implementation data)
   (%wl-proxy-add-listener
-   (.pointer proxy)
+   (unwrap-wl-proxy proxy)
    implementation
-   data
-   ))
+   data))
 
-;; (define %wl-proxy-get-listener
-;;   (wayland-client->procedure
-;;    '* "wl_proxy_get_listener" '(*)))
+(define-public (wl-proxy-marshal-flags proxy opcode interface version . flags)
+  (let ((% (wayland-client->procedure
+            '* "wl_proxy_marshal_flags"
+            `(* ,ffi:uint32 * ,ffi:uint32
+                ,@(make-list (length flags) ffi:uint32)))))
+    (wrap-wl-proxy
+     (apply % (unwrap-wl-proxy proxy)
+            opcode (unwrap-wl-interface interface)
+            version flags))))
 
-;; (define-method (wl-proxy-get-listener (proxy (<wl-proxy>)))
-;;   (let ((p (.pointer proxy)))
-;;     (%wl-proxy-get-listener p)))
 (define %wl-proxy-get-version
   (wayland-client->procedure
    ffi:uint32 "wl_proxy_get_version" '(*)))
 
 (define-method (wl-proxy-get-version (proxy <wl-proxy>))
-  (%wl-proxy-get-version (.pointer proxy)))
+  (%wl-proxy-get-version (unwrap-wl-proxy proxy)))
 
 (define %wl-proxy-get-user-data
   (wayland-client->procedure
    '* "wl_proxy_get_user_data" '(*)))
 
 (define-method (wl-proxy-get-user-data (proxy <wl-proxy>))
-  (%wl-proxy-get-user-data (.pointer proxy)))
+  (%wl-proxy-get-user-data (unwrap-wl-proxy proxy)))

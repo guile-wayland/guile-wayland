@@ -85,7 +85,7 @@
   %wl-display-struct
   wrap-wl-display unwrap-wl-display wl-display?)
 
-(define-bytestructure-class <wl-client-display> ()
+(define-bytestructure-class <wl-client-display> (<wl-proxy>)
   %wl-client-display-struct
   wrap-wl-client-display unwrap-wl-client-display wl-client-display?)
 
@@ -184,10 +184,12 @@
   (% (unwrap-wl-client-display display)))
 
 (define (wl-display-get-registry display)
-  (wrap-wl-registry (wl-proxy-marshal-constructor
-                     display
-                     WL_DISPLAY_GET_REGISTRY
-                     (unwrap-wl-interface %wl-registry-interface))))
+  (wrap-wl-registry
+   (wl-proxy-marshal-flags
+    display
+    WL_DISPLAY_GET_REGISTRY
+    %wl-registry-interface
+    (wl-proxy-get-version display))))
 
 (define-wl-client-procedure (wl-display-dispatch display)
   (ffi:int "wl_display_dispatch" '(*))
