@@ -31,11 +31,5 @@
 (define-bytestructure-class <wl-listener> ()
   %wl-listener-struct
   wrap-wl-listener unwrap-wl-listener wl-listener?
-  (%notify-pointer #:allocation #:instance #:init-value #f)
   (link #:accessor .link)
   (notify #:accessor .notify))
-
-(define (make-wl-listener
-         notify)
-  (%make-wl-listener (lambda (l data)
-                       (notify (wrap-wl-listener l) data))))

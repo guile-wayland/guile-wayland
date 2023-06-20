@@ -7,12 +7,6 @@ for now, provide some wayland-server api, use by guile-wlroots.
 
 https://github.com/guile-wayland/guile-wayland
 
-* NOTE
-
-NOTE: please use =wl-listener-remove= to remove =make-wl-listener= created =<wl-listener>=.
-
-=make-wl-listener= use =scm_gc_protect_object= and =scm_calloc= to create =<wl-listener>=, =wl-listener-remove= wail unprotect and free it.
-
 * dep
 
 autoconf, automake, libtool, pkg-config, texinfo, guile
