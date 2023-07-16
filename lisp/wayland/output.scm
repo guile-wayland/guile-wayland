@@ -27,7 +27,5 @@
    (wayland-server->pointer "wl_output_interface")
    %wl-interface-struct))
 
-
-
 (define-method (wl-output-get-version (output <wl-output>))
   (wl-proxy-get-version output))

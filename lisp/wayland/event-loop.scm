@@ -41,6 +41,7 @@
             wl-event-loop-dispatch))
 
 (define %wl-event-loop-struct (bs:unknow))
+
 (define %wl-event-source-struct (bs:unknow))
 
 (define-bytestructure-class <wl-event-loop> ()

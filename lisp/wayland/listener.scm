@@ -3,11 +3,13 @@
   #:use-module (oop goops)
   #:use-module (wayland base)
   #:use-module (wayland util)
-  #:use-module ((system foreign) #:select (%null-pointer
-                                           procedure->pointer
-                                           void
-                                           pointer?
-                                           pointer->bytevector))
+  #:use-module ((system foreign)
+                #:select
+                (%null-pointer
+                 procedure->pointer
+                 void
+                 pointer?
+                 pointer->bytevector))
   #:use-module (bytestructures guile)
   #:duplicates (merge-generics)
   #:export (%wl-listener-struct
@@ -23,6 +25,7 @@
 
 (define wl-notify-func
   (bs:pointer '*))
+
 (define %wl-listener-struct
   (bs:struct
    `((link ,%wl-list-struct)

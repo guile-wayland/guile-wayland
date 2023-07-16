@@ -8,6 +8,7 @@ $(guile_install_go_files): install-nobase_modDATA
 
 CLEANFILES = $(GOBJECTS)
 EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
+
 GUILE_WARNINGS =                                          \
   -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
   -Wmacro-use-before-definition                           \
@@ -16,21 +17,33 @@ GUILE_WARNINGS =                                          \
   -Wformat
 
 SUFFIXES = .scm .go
+
 .scm.go:
-	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) $(GUILE_WARNINGS) -o "$@" "$<"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET)
+
+$(GUILE_WARNINGS) -o "$@" "$<"
 
 snarfcppopts =  $(INCLUDES) $(CPPFLAGS) $(libguile_wayland_la_CFLAGS)
+
 BUILT_SOURCES= $(libguile_wayland_la_SOURCES:%.c=%.x)
+
 # $(libguile_wayland_la_SOURCES): $(libguile_wayland_la_SOURCES:%.c=%.x)
+
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(snarfcppopts)
+
 moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)/wayland
+
 godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
+
 libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
-lib_LTLIBRARIES = libguile-wayland.la
-$(SOURCES):  $(lib_LTLIBRARIES)
 libguile_wayland_la_SOURCES=listener.c
+
+lib_LTLIBRARIES = libguile-wayland.la
+
+$(SOURCES):  $(lib_LTLIBRARIES)
+
 SOURCES = ../wayland.scm \
  base.scm            \
  argument.scm        \

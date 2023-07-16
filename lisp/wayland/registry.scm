@@ -43,6 +43,7 @@
    (wayland-server->pointer "wl_registry_interface")))
 
 (define %wl-registry-struct (bs:unknow))
+
 (define-bytestructure-class <wl-registry> (<wl-proxy>)
   %wl-registry-struct
   wrap-wl-registry unwrap-wl-registry wl-registry?)
@@ -84,23 +85,32 @@
                                        '* ffi:uint32)))
     o))
 
-(define-public wl-registry-destroy wl-proxy-destroy)
-(define-method (wl-registry-add-listener (registry <wl-registry>) listener data)
+(define-public wl-registry-destroy
+  wl-proxy-destroy)
+
+(define-method (wl-registry-add-listener
+                (registry <wl-registry>) listener data)
   (wl-proxy-add-listener
    registry
    (if (wl-registry-listener? listener)
        (unwrap-wl-registry-listener listener)
        listener)
    data))
-(define-method (wl-registry-add-listener (registry <wl-registry>) listener )
+
+(define-method (wl-registry-add-listener
+                (registry <wl-registry>) listener )
   (wl-registry-add-listener registry listener %null-pointer))
 
-(define-method (wl-registry-get-version (registry <wl-registry>))
+(define-method (wl-registry-get-version
+                (registry <wl-registry>))
   (wl-proxy-get-version registry))
-(define-method (wl-registry-get-user-data (registry <wl-registry>))
+
+(define-method (wl-registry-get-user-data
+                (registry <wl-registry>))
   (wl-proxy-get-user-data registry))
 
-(define (wl-registry-bind registry name interface version)
+(define (wl-registry-bind
+         registry name interface version)
   (wl-proxy-marshal-constructor-versioned
    registry WL_REGISTRY_BIND
    interface version

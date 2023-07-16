@@ -11,25 +11,26 @@
   #:use-module (wayland list)
   #:use-module (wayland listener)
   #:use-module ((system foreign)
-                #:select (null-pointer?
-                          bytevector->pointer
-                          make-pointer
-                          procedure->pointer
-                          pointer->procedure
-                          pointer->bytevector
-                          pointer->string
-                          string->pointer
-                          sizeof
-                          %null-pointer
-                          dereference-pointer
-                          define-wrapped-pointer-type
-                          pointer-address
-                          void
-                          (int . ffi:int)
-                          (uint32 . ffi:uint32)
-                          (double . ffi:double)
-                          (size_t . ffi:size_t)
-                          (uintptr_t . ffi:uintptr_t)))
+                #:select
+                (null-pointer?
+                 bytevector->pointer
+                 make-pointer
+                 procedure->pointer
+                 pointer->procedure
+                 pointer->bytevector
+                 pointer->string
+                 string->pointer
+                 sizeof
+                 %null-pointer
+                 dereference-pointer
+                 define-wrapped-pointer-type
+                 pointer-address
+                 void
+                 (int . ffi:int)
+                 (uint32 . ffi:uint32)
+                 (double . ffi:double)
+                 (size_t . ffi:size_t)
+                 (uintptr_t . ffi:uintptr_t)))
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
@@ -80,8 +81,11 @@
    (wayland-server->pointer "wl_display_interface")))
 
 (define WL_DISPLAY_GET_REGISTRY 1)
+
 (define %wl-display-struct (bs:unknow))
+
 (define %wl-client-display-struct (bs:unknow))
+
 (define-bytestructure-class <wl-display> ()
   %wl-display-struct
   wrap-wl-display unwrap-wl-display wl-display?)

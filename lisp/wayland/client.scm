@@ -11,25 +11,27 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
-  #:use-module ((system foreign) #:select (null-pointer?
-                                           bytevector->pointer
-                                           make-pointer
-                                           procedure->pointer
-                                           define-wrapped-pointer-type
-                                           pointer->procedure
-                                           pointer->bytevector
-                                           pointer->string
-                                           string->pointer
-                                           sizeof
-                                           %null-pointer
-                                           dereference-pointer
-                                           pointer-address
-                                           void
-                                           (int . ffi:int)
-                                           (double . ffi:double)
-                                           (uint32 . ffi:uint32)
-                                           (size_t . ffi:size_t)
-                                           (uintptr_t . ffi:uintptr_t)))
+  #:use-module ((system foreign)
+                #:select
+                (null-pointer?
+                 bytevector->pointer
+                 make-pointer
+                 procedure->pointer
+                 define-wrapped-pointer-type
+                 pointer->procedure
+                 pointer->bytevector
+                 pointer->string
+                 string->pointer
+                 sizeof
+                 %null-pointer
+                 dereference-pointer
+                 pointer-address
+                 void
+                 (int . ffi:int)
+                 (double . ffi:double)
+                 (uint32 . ffi:uint32)
+                 (size_t . ffi:size_t)
+                 (uintptr_t . ffi:uintptr_t)))
   #:export (%wl-client-struct
             wl-client-create
             wrap-wl-client
@@ -40,20 +42,26 @@
             wl-client-get-display))
 
 (define %wl-client-struct (bs:unknow))
+
 (define-bytestructure-class <wl-client> ()
   %wl-client-struct
   wrap-wl-client unwrap-wl-client wl-client?)
 
-(define %wl-client-create (wayland-server->procedure '* "wl_client_create" (list '* ffi:int)))
+(define %wl-client-create
+  (wayland-server->procedure '* "wl_client_create" (list '* ffi:int)))
 
 (define (wl-client-create w-display fd)
   (wrap-wl-client (%wl-client-create (unwrap-wl-display w-display) fd)))
 
-(define %wl-client-flush (wayland-server->procedure void "wl_client_flush" '(*)))
+(define %wl-client-flush
+  (wayland-server->procedure void "wl_client_flush" '(*)))
+
 (define (wl-client-flush client)
   (%wl-client-flush (unwrap-wl-client client)))
 
-(define %wl-client-get-link (wayland-server->procedure '* "wl_client_get_link" '(*)))
+(define %wl-client-get-link
+  (wayland-server->procedure '* "wl_client_get_link" '(*)))
+
 (define (wl-client-get-link client)
   (wrap-wl-list (%wl-client-get-link (unwrap-wl-client client))))
 
@@ -61,13 +69,16 @@
   (void "wl_client_add_destroy_listener" '(* *))
   (% (unwrap-wl-client client) (unwrap-wl-listener listener)))
 
-(define %wl-client-from-link (wayland-server->procedure '* "wl_client_from_link" '(*)))
+(define %wl-client-from-link
+  (wayland-server->procedure '* "wl_client_from_link" '(*)))
 
 (define (wl-client-from-link wl-l)
   (wrap-wl-client (%wl-client-from-link (unwrap-wl-list wl-l))))
 
-"wl_client_get_credentials"
-(define wl-event-queue-destroy (wayland-client->procedure void "wl_event_queue_destroy" '(*)))
+;; "wl_client_get_credentials"
+
+(define wl-event-queue-destroy
+  (wayland-client->procedure void "wl_event_queue_destroy" '(*)))
 
 (define wl-client-get-object
   (let ((proc (wayland-server->procedure '* "wl_client_get_object" (list '* ffi:uint32))))
@@ -94,7 +105,8 @@
     (lambda (client iterator)
       (proc (unwrap-wl-client client) iterator))))
 
-(define %wl-client-get-display (wayland-server->procedure '* "wl_client_get_display" '(*)))
+(define %wl-client-get-display
+  (wayland-server->procedure '* "wl_client_get_display" '(*)))
 
 (define (wl-client-get-display client)
   (wrap-wl-display (%wl-client-get-display (unwrap-wl-client client))))

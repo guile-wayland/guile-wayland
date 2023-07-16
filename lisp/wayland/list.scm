@@ -5,10 +5,12 @@
   #:use-module (bytestructures guile)
   #:use-module (ice-9 format)
   #:use-module (bytestructure-class)
-  #:use-module ((system foreign) #:select (make-pointer
-                                           pointer-address
-                                           %null-pointer void pointer?
-                                           (int . ffi:int)))
+  #:use-module ((system foreign)
+                #:select
+                (make-pointer
+                 pointer-address
+                 %null-pointer void pointer?
+                 (int . ffi:int)))
   #:export (;wl-list-init
             %wl-list-struct
             wrap-wl-list
@@ -27,6 +29,7 @@
 
 ;; (define-class <wl-list> ()
 ;;   (pointer #:ass))
+
 (define %wl-list-struct
   (bs:struct
    `((prev ,(bs:pointer (delay %wl-list-struct)))
@@ -39,7 +42,9 @@
   (next #:accessor .next))
 
 (define (make-wl-list)
-  (let ((o(wrap-wl-list (bytestructure->pointer (bytestructure %wl-list-struct)))))
+  (let ((o (wrap-wl-list
+            (bytestructure->pointer
+             (bytestructure %wl-list-struct)))))
     (wl-list-init o)
     o))
 
@@ -75,12 +80,14 @@
 (define (wl-list-length w-list)
   (%wl-list-length (unwrap-wl-list w-list)))
 
-(define %wl-list-empty (wayland-server->procedure ffi:int "wl_list_empty" '(*)))
+(define %wl-list-empty
+  (wayland-server->procedure ffi:int "wl_list_empty" '(*)))
 
-(define (wl-list-empty l) (case (%wl-list-empty (unwrap-wl-list l))
-                            ((0) #f)
-                            ((1) #t)
-                            (else (error ))) )
+(define (wl-list-empty l)
+  (case (%wl-list-empty (unwrap-wl-list l))
+    ((0) #f)
+    ((1) #t)
+    (else (error ))) )
 
 (define* (make-wl-list-for-each #:optional (to-next .next))
   (lambda (proc wl-list bs member)
@@ -94,10 +101,21 @@
             (proc obj wl-list*)
             (loop (to-next wl-list*)
                   (wl-container-of (to-next wl-list*) bs member))))))))
-(define-method (wl-list-for-each (proc <procedure>) (wl-list <wl-list>) bs (member <symbol>))
+
+(define-method (wl-list-for-each
+                (proc <procedure>)
+                (wl-list <wl-list>)
+                bs
+                (member <symbol>))
   ((make-wl-list-for-each) proc wl-list bs member))
-(define-method (wl-list-for-each-reverse (proc <procedure>) (wl-list <wl-list>) bs (member <symbol>))
+
+(define-method (wl-list-for-each-reverse
+                (proc <procedure>)
+                (wl-list <wl-list>)
+                bs
+                (member <symbol>))
   ((make-wl-list-for-each .prev) proc wl-list bs member))
+
 (define (wl-list->list wlist bs member)
   (let ((n '()))
     (wl-list-for-each

@@ -5,7 +5,14 @@
   #:use-module (wayland listener)
   #:use-module (rnrs bytevectors)
   #:use-module (bytestructures guile)
-  #:use-module ((system foreign) #:select (pointer? pointer->bytevector bytevector->pointer make-pointer void procedure->pointer))
+  #:use-module ((system foreign)
+                #:select
+                (pointer?
+                 pointer->bytevector
+                 bytevector->pointer
+                 make-pointer
+                 void
+                 procedure->pointer))
   #:use-module (oop goops)
   #:duplicates (merge-generics)
   #:export (%wl-signal-struct
@@ -15,6 +22,7 @@
             wl-signal-init
             .listener-list
             <wl-signal>))
+
 (eval-when (expand load eval)
   (define %wl-signal-struct
     (bs:struct `((listener-list ,%wl-list-struct)))))
