@@ -4,24 +4,25 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
-  #:use-module ((system foreign) #:select (null-pointer?
-                                           bytevector->pointer
-                                           make-pointer
-                                           procedure->pointer
-                                           pointer->procedure
-                                           pointer->bytevector
-                                           pointer->string
-                                           string->pointer
-                                           sizeof
-                                           %null-pointer
-                                           dereference-pointer
-                                           define-wrapped-pointer-type
-                                           pointer-address
-                                           void
-                                           (int . ffi:int)
-                                           (double . ffi:double)
-                                           (size_t . ffi:size_t)
-                                           (uintptr_t . ffi:uintptr_t))))
+  #:use-module ((system foreign)
+                #:select (null-pointer?
+                          bytevector->pointer
+                          make-pointer
+                          procedure->pointer
+                          pointer->procedure
+                          pointer->bytevector
+                          pointer->string
+                          string->pointer
+                          sizeof
+                          %null-pointer
+                          dereference-pointer
+                          define-wrapped-pointer-type
+                          pointer-address
+                          void
+                          (int . ffi:int)
+                          (double . ffi:double)
+                          (size_t . ffi:size_t)
+                          (uintptr_t . ffi:uintptr_t))))
 (define wl-cursor-image
   (bs:struct `((width ,uint32)
                (height ,uint32)
