@@ -1,0 +1,7 @@
+# -*- mode: org; -*-
+#+title: guile-wayland.
+
+This is a WIP project. It provides some wayland-server api, use by guile-wlroots.
+
+* License
+GPL3+
