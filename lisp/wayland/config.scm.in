@@ -1,9 +1,28 @@
 (define-module (wayland config)
+  ;; #:use-module (gnu packages freedesktop)
+
+  ;; #:use-module (guix gexp)
+  ;; #:use-module (guix monads)
+  ;; #:use-module (guix derivations)
+  ;; #:use-module (guix store)
+
   #:export (%wayland-libdir
             %libwayland-client
             %libwayland-server
             %libwayland-cursor))
+
+;; TODO: find a way to refer to the current wayland lib dynamically to run interactively with REPL
+
+;; (define %wayland-libdir
+;;   "/gnu/store/a3flz4vpqgnjxc6jv0cjv6f7qdbg4igz-wayland-1.22.0/lib/")
+
 (define %wayland-libdir "@WAYLAND_LIBDIR@/")
-(define %libwayland-server (string-append %wayland-libdir "libwayland-server.so"))
-(define %libwayland-client (string-append %wayland-libdir "libwayland-client.so"))
-(define %libwayland-cursor (string-append %wayland-libdir "libwayland-cursor.so"))
+
+(define %libwayland-server
+  (string-append %wayland-libdir "libwayland-server.so"))
+
+(define %libwayland-client
+  (string-append %wayland-libdir "libwayland-client.so"))
+
+(define %libwayland-cursor
+  (string-append %wayland-libdir "libwayland-cursor.so"))
