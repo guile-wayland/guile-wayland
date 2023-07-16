@@ -5,7 +5,9 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35))
 
-(setenv "XDG_RUNTIME_DIR" (mkdtemp "/tmp/test-guile-wayland-XXXXXX"))
+(setenv "XDG_RUNTIME_DIR"
+        (mkdtemp "/tmp/test-guile-wayland-XXXXXX"))
+
 (test-group "server"
   (let ((d (wl-display-create)))
     (test-assert "server create"

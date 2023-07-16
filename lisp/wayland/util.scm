@@ -5,20 +5,21 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
-  #:use-module ((system foreign) #:select (null-pointer?
-                                           bytevector->pointer
-                                           make-pointer
-                                           procedure->pointer
-                                           pointer->procedure
-                                           pointer->bytevector
-                                           pointer->string
-                                           string->pointer
-                                           sizeof
-                                           %null-pointer
-                                           dereference-pointer
-                                           define-wrapped-pointer-type
-                                           pointer-address
-                                           void))
+  #:use-module ((system foreign)
+                #:select (null-pointer?
+                          bytevector->pointer
+                          make-pointer
+                          procedure->pointer
+                          pointer->procedure
+                          pointer->bytevector
+                          pointer->string
+                          string->pointer
+                          sizeof
+                          %null-pointer
+                          dereference-pointer
+                          define-wrapped-pointer-type
+                          pointer-address
+                          void))
   #:re-export (bytestructure->pointer
                pointer->bytestructure)
   #:export (wayland-server->pointer
@@ -42,6 +43,7 @@
 
 (define (wayland-client->pointer name)
   (dynamic-func name (dynamic-link %libwayland-client)))
+
 (define (wayland-server->procedure return name params)
   (let ((ptr (wayland-server->pointer name)))
     (pointer->procedure return ptr params)))
@@ -76,11 +78,13 @@
       ((o-name (name args ...) (return-type cname arg-types))
        #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
 
-(define make-pointer->string (compose (lambda (a) (if (null-pointer? a)
-                                                      ""
-                                                      (pointer->string a))) make-pointer))
+(define make-pointer->string
+  (compose (lambda (a) (if (null-pointer? a)
+                      ""
+                      (pointer->string a))) make-pointer))
 
-(define string->pointer-address (compose pointer-address string->pointer))
+(define string->pointer-address
+  (compose pointer-address string->pointer))
 
 (define %wl-array-struct
   (bs:struct `((size ,size_t)

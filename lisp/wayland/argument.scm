@@ -2,6 +2,7 @@
   #:use-module (bytestructures guile)
   #:use-module ((system foreign) #:prefix ffi:)
   #:export (%wl-argument-struct))
+
 (define %wl-argument-struct
   (bs:union `((i ,ffi:int32)
               (u ,ffi:uint32)
