@@ -27,6 +27,8 @@ TESTS= tests/display.scm
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
+README: README.org
+
 TEST_EXTENSIONS = .scm
 SCM_LOG_DRIVER =                                \
   $(top_builddir)/pre-inst-env                  \
