@@ -54,22 +54,24 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
                         #:recursive? #t
                         #:select? (git-predicate ".")))
     (build-system gnu-build-system)
-    (arguments (list #:make-flags '(list "GUILE_AUTO_COMPILE=0")
-                     #:phases
-                     #~(modify-phases %standard-phases
-                         (add-after 'build 'load-extension
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (substitute*
-                                 (find-files "." ".*\\.scm")
-                               (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
-                                (string-append
-                                 (object->string
-                                  `(or (false-if-exception (load-extension "libguile-wayland" ,o))
-                                       (load-extension
-                                        ,(string-append
-                                          (assoc-ref outputs "out")
-                                          "/lib/libguile-wayland.so")
-                                        ,o)))))))))))
+    (arguments (list
+                #:configure-flags #~(list "--disable-dependency-tracking")
+                #:make-flags #~(list "GUILE_AUTO_COMPILE=0")
+                #:phases
+                #~(modify-phases %standard-phases
+                    (add-after 'build 'load-extension
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (substitute*
+                            (find-files "." ".*\\.scm")
+                          (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
+                           (string-append
+                            (object->string
+                             `(or (false-if-exception (load-extension "libguile-wayland" ,o))
+                                  (load-extension
+                                   ,(string-append
+                                     (assoc-ref outputs "out")
+                                     "/lib/libguile-wayland.so")
+                                   ,o)))))))))))
     (native-inputs
      (list autoconf
            automake
