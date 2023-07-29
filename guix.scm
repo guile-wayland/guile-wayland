@@ -19,7 +19,7 @@
 (define-public guile-bytestructure-class
   (package
     (name "guile-bytestructure-class")
-    (version "0.1")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -28,7 +28,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lmpckqisz3viakbzwa659l86l64iyf98qskbi8ggf0m1p46rmmw"))))
+                "0y3sryy79arp3f5smyxn8w7zra3j4bb0qdpl1p0bld3jicc4s86a"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags #~'("GUILE_AUTO_COMPILE=0")))
@@ -80,11 +80,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
     (inputs (list guile-3.0-latest wayland))
     (propagated-inputs
      (list
-      (let ((file (string-append (dirname (dirname (current-filename)))
-                                 "/guile-bytestructure-class/guix.scm")))
-        (if (file-exists? file)
-            (primitive-load file)
-            guile-bytestructure-class))
+      guile-bytestructure-class
       guile-bytestructures))
     (synopsis "")
     (description "")
