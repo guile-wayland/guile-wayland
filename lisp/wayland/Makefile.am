@@ -42,6 +42,8 @@ libguile_wayland_la_SOURCES=listener.c
 
 lib_LTLIBRARIES = libguile-wayland.la
 
+README: $(top_srcdir)/README.org
+
 $(SOURCES):  $(lib_LTLIBRARIES)
 
 SOURCES = ../wayland.scm \
