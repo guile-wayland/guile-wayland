@@ -1,0 +1,16 @@
+# -*- mode: org; -*-
+#+title: guile-wayland.
+
+This is a WIP project.
+
+for now, provide some wayland-server api, use by guile-wlroots.
+
+https://github.com/guile-wayland/guile-wayland
+
+* dep
+
+autoconf, automake, libtool, pkg-config, texinfo, guile
+wayland
+guile-bytestructures, guile-bytestructure-class
+* license
+GPL3+
