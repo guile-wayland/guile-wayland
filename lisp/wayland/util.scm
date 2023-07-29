@@ -56,7 +56,7 @@
       ((_ (name args ...) (return-type cname arg-types) body ...)
        (with-syntax ((% (datum->syntax x '%)))
          #'(begin
-             (define name
+             (define-public name
                (let ((% (wayland-server->procedure return-type cname arg-types)))
                  (lambda* (args ...)
                    body ...))))))
@@ -69,7 +69,7 @@
       ((_ (name args ...) (return-type cname arg-types) body ...)
        (with-syntax ((% (datum->syntax x '%)))
          #'(begin
-             (define name
+             (define-public name
                (let ((% (wayland-client->procedure return-type cname arg-types)))
                  (lambda* (args ...)
                    body ...))))))
