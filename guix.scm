@@ -16,6 +16,8 @@
  (gnu packages file)
  (gnu packages build-tools))
 
+(define %source-dir (dirname (current-filename)))
+
 (define-public guile-bytestructure-class
   (package
     (name "guile-bytestructure-class")
@@ -49,27 +51,29 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
 (define guile-wayland
   (package
     (name "guile-wayland")
-    (version "0.1")
-    (source (local-file "." "guile-wayland-checkout"
+    (version "0.0.1")
+    (source (local-file %source-dir "guile-wayland-checkout"
                         #:recursive? #t
-                        #:select? (git-predicate (dirname (current-filename)))))
+                        #:select? (git-predicate %source-dir)))
     (build-system gnu-build-system)
-    (arguments (list #:make-flags '(list "GUILE_AUTO_COMPILE=0")
-                     #:phases
-                     #~(modify-phases %standard-phases
-                         (add-after 'build 'load-extension
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (substitute*
-                                 (find-files "." ".*\\.scm")
-                               (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
-                                (string-append
-                                 (object->string
-                                  `(or (false-if-exception (load-extension "libguile-wayland" ,o))
-                                       (load-extension
-                                        ,(string-append
-                                          (assoc-ref outputs "out")
-                                          "/lib/libguile-wayland.so")
-                                        ,o)))))))))))
+    (arguments
+     (list
+      #:make-flags '(list "GUILE_AUTO_COMPILE=0")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'build 'load-extension
+            (lambda* (#:key outputs #:allow-other-keys)
+              (substitute* (find-files "." ".*\\.scm")
+                (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
+                 (string-append
+                  (object->string
+                   `(or (false-if-exception
+                         (load-extension "libguile-wayland" ,o))
+                        (load-extension
+                         ,(string-append
+                           #$output
+                           "/lib/libguile-wayland.so")
+                         ,o)))))))))))
     (native-inputs
      (list autoconf
            automake
@@ -84,7 +88,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
       guile-bytestructures))
     (synopsis "")
     (description "")
-    (home-page "")
+    (home-page "https://github.com/guile-wayland/guile-wayland")
     (license license:gpl3+)))
 
 guile-wayland
