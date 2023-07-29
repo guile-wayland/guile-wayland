@@ -1,20 +1,15 @@
-GOBJECTS = $(SOURCES:%.scm=%.go) $(NODIST_SOURCES:%.scm=%.go)
+GOBJECTS = $(SOURCES:%.scm=%.go)
 
-nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES) $(NODIST_SOURCES)
+nobase_mod_DATA = $(SOURCES)
 nobase_go_DATA = $(GOBJECTS)
 
 guile_install_go_files = install-nobase_goDATA
 $(guile_install_go_files): install-nobase_modDATA
 
 CLEANFILES = $(GOBJECTS)
-EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
+EXTRA_DIST = $(SOURCES)
 
-GUILE_WARNINGS =                                          \
-  -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
-  -Wmacro-use-before-definition                           \
-  -Wunused-variable                                       \
-  -Wduplicate-case-datum -Wbad-case-datum                 \
-  -Wformat
+GUILE_WARNINGS = -W3
 
 SUFFIXES = .scm .go
 
@@ -25,8 +20,6 @@ SUFFIXES = .scm .go
 snarfcppopts =  $(INCLUDES) $(CPPFLAGS) $(libguile_wayland_la_CFLAGS)
 
 BUILT_SOURCES= $(libguile_wayland_la_SOURCES:%.c=%.x)
-
-# $(libguile_wayland_la_SOURCES): $(libguile_wayland_la_SOURCES:%.c=%.x)
 
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(snarfcppopts)
