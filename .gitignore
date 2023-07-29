@@ -1,3 +1,6 @@
+.ccls-cache/
+build-aux/wayland-scanner-guile
+lisp/wayland/config.scm
 lisp/wayland/protocol.scm
 .libs/
 .deps/
