@@ -4,17 +4,18 @@ nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES) $(NODIST_SOURCES)
 nobase_go_DATA = $(GOBJECTS)
 
 guile_install_go_files = install-nobase_goDATA
-$(guile_install_go_files): install-nobase_modDATA
+$(guile_install_go_files):
+	install-nobase_modDATA
 
 CLEANFILES = $(GOBJECTS)
 EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
 
-GUILE_WARNINGS =                                          \
-  -Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
-  -Wmacro-use-before-definition                           \
-  -Wunused-variable                                       \
-  -Wduplicate-case-datum -Wbad-case-datum                 \
-  -Wformat
+GUILE_WARNINGS =                                            \
+	-Wunbound-variable -Warity-mismatch -Wshadowed-toplevel \
+	-Wmacro-use-before-definition                           \
+	-Wunused-variable                                       \
+	-Wduplicate-case-datum -Wbad-case-datum                 \
+	-Wformat
 
 SUFFIXES = .scm .go
 
@@ -23,55 +24,59 @@ SUFFIXES = .scm .go
 
 $(GUILE_WARNINGS) -o "$@" "$<"
 
-snarfcppopts =  $(INCLUDES) $(CPPFLAGS) $(libguile_wayland_la_CFLAGS)
+snarfcppopts = $(INCLUDES) $(CPPFLAGS) $(libguile_wayland_la_CFLAGS)
 
-BUILT_SOURCES= $(libguile_wayland_la_SOURCES:%.c=%.x)
+BUILT_SOURCES = $(libguile_wayland_la_SOURCES:%.c=%.x)
 
-# $(libguile_wayland_la_SOURCES): $(libguile_wayland_la_SOURCES:%.c=%.x)
+$(libguile_wayland_la_SOURCES):
+	$(libguile_wayland_la_SOURCES:%.c=%.x)
 
 .c.x:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(snarfcppopts)
 
-moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)/wayland
+moddir = $(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)/wayland
 
-godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
+godir = $(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
-libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
-libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
-libguile_wayland_la_SOURCES=listener.c
+libguile_wayland_la_CFLAGS = $(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
+libguile_wayland_la_LIBADD = $(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
+libguile_wayland_la_SOURCES = listener.c
 
 lib_LTLIBRARIES = libguile-wayland.la
 
-README: $(top_srcdir)/README.org
+README:
+	$(top_srcdir)/README.org
 
-$(SOURCES):  $(lib_LTLIBRARIES)
+$(SOURCES):
+	$(lib_LTLIBRARIES)
 
 SOURCES = ../wayland.scm \
- base.scm            \
- argument.scm        \
- callback.scm        \
- client.scm          \
- client-core.scm     \
- compositor.scm      \
- config.scm          \
- cursor.scm          \
- display.scm         \
- egl.scm             \
- event-loop.scm      \
- global.scm          \
- interface.scm       \
- keyboard.scm        \
- protocol.scm        \
- list.scm            \
- listener.scm        \
- output.scm          \
- pointer.scm         \
- proxy.scm           \
- registry.scm        \
- resource.scm        \
- shm.scm             \
- signal.scm          \
- touch.scm           \
- util.scm
+	base.scm             \
+	argument.scm         \
+	callback.scm         \
+	client.scm           \
+	client-core.scm      \
+	compositor.scm       \
+	config.scm           \
+	cursor.scm           \
+	display.scm          \
+	egl.scm              \
+	event-loop.scm       \
+	global.scm           \
+	interface.scm        \
+	keyboard.scm         \
+	protocol.scm         \
+	list.scm             \
+	listener.scm         \
+	output.scm           \
+	pointer.scm          \
+	proxy.scm            \
+	registry.scm         \
+	resource.scm         \
+	shm.scm              \
+	signal.scm           \
+	touch.scm            \
+	util.scm
+
 protocol.scm:
 	$(top_srcdir)/build-aux/wayland-scanner-guile > $@
