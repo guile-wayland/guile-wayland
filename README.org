@@ -3,5 +3,10 @@
 
 This is a WIP project. It provides some wayland-server api, use by guile-wlroots.
 
+* Status
+** Build
+Building with ~guix package -f guix.scm~ now results with ~build~ phase failure.
+** Interactive development (REPL)
+Not set up yet.
 * License
 GPL3+
