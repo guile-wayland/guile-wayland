@@ -52,7 +52,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
     (version "0.1")
     (source (local-file "." "guile-wayland-checkout"
                         #:recursive? #t
-                        #:select? (git-predicate (dirname (current-filename)))))
+                        #:select? (git-predicate ".")))
     (build-system gnu-build-system)
     (arguments (list #:make-flags '(list "GUILE_AUTO_COMPILE=0")
                      #:phases
@@ -80,11 +80,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
     (inputs (list guile-3.0-latest wayland))
     (propagated-inputs
      (list
-      (let ((file (string-append (dirname (dirname (current-filename)))
-                                 "/guile-bytestructure-class/guix.scm")))
-        (if (file-exists? file)
-            (primitive-load file)
-            guile-bytestructure-class))
+      guile-bytestructure-class
       guile-bytestructures))
     (synopsis "")
     (description "")
