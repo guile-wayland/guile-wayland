@@ -34,10 +34,7 @@ libguile_wayland_la_SOURCES=listener.c
 SOURCES = ../wayland.scm \
  base.scm            \
  argument.scm        \
- callback.scm        \
  client.scm          \
- client-core.scm     \
- compositor.scm      \
  config.scm          \
  cursor.scm          \
  display.scm         \
@@ -56,7 +53,6 @@ SOURCES = ../wayland.scm \
  resource.scm        \
  shm.scm             \
  signal.scm          \
- touch.scm           \
  util.scm
 protocol.scm:
 	$(top_srcdir)/build-aux/wayland-scanner-guile > $@

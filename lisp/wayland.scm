@@ -6,9 +6,7 @@
       (map (lambda (a) (cons 'wayland (list a)))
            '(;api
                                         ;argument
-             callback
              client
-                                        ;compositor
              config
              cursor
              display
@@ -27,7 +25,6 @@
              ;;server-core
              shm
              signal
-                                        ;touch
              util)))
 
     (let* ((current-module (current-module))
