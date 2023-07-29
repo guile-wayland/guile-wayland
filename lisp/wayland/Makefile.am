@@ -38,6 +38,7 @@ SOURCES = ../wayland.scm \
  config.scm          \
  cursor.scm          \
  display.scm         \
+ server/display.scm  \
  egl.scm             \
  event-loop.scm      \
  global.scm          \

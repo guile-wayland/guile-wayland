@@ -33,31 +33,11 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (%wl-display-struct
-            %wl-client-display-struct
+  #:export (%wl-client-display-struct
             %wl-display-interface
-            wl-display?
             wl-client-display?
-            wrap-wl-display
             wrap-wl-client-display
-            unwrap-wl-display
             unwrap-wl-client-display
-
-            wl-display-create
-            wl-display-add-socket
-            wl-display-add-socket-auto
-            wl-display-destroy
-            wl-display-destroy-clients
-            wl-display-run
-            wl-display-get-event-loop
-            wl-display-terminate
-            wl-display-add-destroy-listener
-
-            wl-display-add-client-created-listener
-            wl-display-init-shm
-
-            wl-display-flush-clients
-            wl-display-get-client-list
 
             ;; client
             wl-display-connect
@@ -71,6 +51,14 @@
             wl-display-read-events
             wl-display-flush))
 
+(eval-when (eval load compile)
+  (begin
+    (let* ((current-module (current-module))
+           (current-module-interface (resolve-interface (module-name current-module)))
+           (submodule-interface (resolve-interface '(wayland server display))))
+      (module-use! current-module submodule-interface)
+      (module-use! current-module-interface submodule-interface))))
+
 ;; (define wl-display-interface-struct
 ;;   (bs:struct `((sync ,(bs:pointer 'void))
 ;;                (get-registry ,(bs:pointer 'void)))))
@@ -79,84 +67,12 @@
    (wayland-server->pointer "wl_display_interface")))
 
 (define WL_DISPLAY_GET_REGISTRY 1)
-(define %wl-display-struct (bs:unknow))
 (define %wl-client-display-struct (bs:unknow))
-(define-bytestructure-class <wl-display> ()
-  %wl-display-struct
-  wrap-wl-display unwrap-wl-display wl-display?)
 
 (define-bytestructure-class <wl-client-display> (<wl-proxy>)
   %wl-client-display-struct
   wrap-wl-client-display unwrap-wl-client-display wl-client-display?)
 
-(define-wl-server-procedure (wl-display-create)
-  ('* "wl_display_create" '())
-  (let ((out (%)))
-    (if (null-pointer? out)
-        #f
-        (wrap-wl-display out))))
-
-(define-wl-server-procedure (wl-display-destroy w-display)
-  (void "wl_display_destroy" '(*))
-  (% (unwrap-wl-display w-display)))
-
-(define-wl-server-procedure (wl-display-destroy-clients w-display)
-  (void "wl_display_destroy_clients" '(*))
-  (% (unwrap-wl-display w-display)))
-
-(define-wl-server-procedure (wl-display-get-event-loop w-display)
-  ('* "wl_display_get_event_loop" '(*))
-  (wrap-wl-event-loop
-   (% (unwrap-wl-display w-display))))
-
-(define-wl-server-procedure (wl-display-add-socket a b)
-  (ffi:int "wl_display_add_socket" '(* *))
-  (% (unwrap-wl-display a)
-     (string->pointer b)))
-
-(define-wl-server-procedure (wl-display-add-socket-auto display)
-  ('* "wl_display_add_socket_auto" '(*))
-  (let ((out (% (unwrap-wl-display display))))
-    (if (null-pointer? out)
-        #f
-        (pointer->string out))))
-
-(define-wl-server-procedure (wl-display-add-socket-fd a b)
-  (ffi:int "wl_display_add_socket" (list '* ffi:int))
-  (% (unwrap-wl-display a) b))
-
-(define-wl-server-procedure (wl-display-terminate a)
-  (void "wl_display_terminate" '(*))
-  (% (unwrap-wl-display a)))
-
-(define-wl-server-procedure (wl-display-run w-display)
-  (void "wl_display_run" '(*))
-  (% (unwrap-wl-display w-display)))
-
-(define-wl-server-procedure (wl-display-flush-clients d)
-  (void "wl_display_flush_clients" '(*))
-  (% (unwrap-wl-display d)))
-
-(define-wl-server-procedure (wl-display-add-destroy-listener w-display w-listener)
-  (void "wl_display_add_destroy_listener" '(* *))
-  (% (unwrap-wl-display w-display)
-     (unwrap-wl-listener w-listener)))
-
-(define-wl-server-procedure (wl-display-add-client-created-listener w-display w-listener)
-  (void "wl_display_add_client_created_listener"
-        '(* *))
-  (% (unwrap-wl-display w-display)
-     (unwrap-wl-listener w-listener)))
-
-(define-wl-server-procedure (wl-display-get-client-list w-display)
-  ('* "wl_display_get_client_list" '(*))
-  (wrap-wl-list
-   (%
-    (unwrap-wl-display w-display))))
-
-(define-wl-server-procedure (wl-display-init-shm w-display)
-  (ffi:int "wl_display_init_shm" '(*))
-  (% (unwrap-wl-display w-display)))
 
 ;; client
 
