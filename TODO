@@ -1,0 +1,18 @@
+* TODO a guile's wayland-scanner
+can read a xml file and output code at runtime.
+* TODO code structure
+likes
+
+#+begin_example
+server/     # libwayland-server.so
+client/     # libwayland-client.so
+egl.scm     # libwayland-egl.so
+cursor.scm  # libwayland-cursor.so
+util.scm
+#+end_example
+* TODO simple example.
+* TODO add wayland-client ffi binding and make it work fine.
+
+# Local Variables:
+# mode: org
+# End:
