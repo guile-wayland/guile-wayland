@@ -31,7 +31,8 @@
   #:export (%wl-display-struct
             wrap-wl-display
             unwrap-wl-display
-            wl-display?))
+            wl-display?
+            wl-display-add-socket*))
 
 (define %wl-display-struct (bs:unknow))
 
@@ -54,6 +55,15 @@
   ('* "wl_display_get_event_loop" '(*))
   (wrap-wl-event-loop
    (% (unwrap-wl-display w-display))))
+
+(define* (wl-display-add-socket* display #:optional fd-or-name)
+  (if fd-or-name
+      (cond ((string? fd-or-name)
+             (wl-display-add-socket display fd-or-name))
+            (else
+             (wl-display-add-socket-fd display fd-or-name)))
+
+      (wl-display-add-socket-auto display)))
 
 (define-wl-server-procedure (wl-display-add-socket a b)
   (ffi:int "wl_display_add_socket" '(* *))
