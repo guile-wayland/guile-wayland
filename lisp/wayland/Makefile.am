@@ -44,7 +44,8 @@ SOURCES = ../wayland.scm \
  cursor.scm          \
  display.scm         \
  server/display.scm  \
- server/client.scm  \
+ server/client.scm   \
+ server/global.scm   \
  egl.scm             \
  event-loop.scm      \
  global.scm          \
