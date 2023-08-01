@@ -68,7 +68,7 @@
                             (global data
 
                                     (wrap-wl-registry registry)
-                                    (make-pointer->string name)
+                                    name
                                     (pointer->string interface)
                                     version
                                     ))
