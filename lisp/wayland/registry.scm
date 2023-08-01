@@ -80,7 +80,7 @@
 
                                     data
                                     (wrap-wl-registry registry)
-                                    (make-pointer->string name)))
+                                    name))
                                  (list '*
                                        '* ffi:uint32)))
     o))
