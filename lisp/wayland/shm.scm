@@ -13,42 +13,12 @@
   #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (wayland proxy)
-  #:use-module (wayland client)
-  #:use-module (wayland resource)
+  #:use-module (wayland server client)
+  #:use-module (wayland server resource)
   #:use-module (ice-9 format)
-  #:use-module (bytestructures guile)
-  #:export (%wl-shm-buffer-struct))
+  #:use-module (bytestructures guile))
 
 (define %wl-shm-buffer-struct (bs:unknow))
-
-(define WL_SHM_CREATE_POOL 0)
-
-(define %wl-shm-pool-interface-struct
-  (bs:struct
-   `((create-buffer ,(bs:pointer '*))
-     (destroy ,(bs:pointer '*))
-     (resize ,(bs:pointer '*)))))
-
-(define %wl-shm-pool-interface
-  (pointer->bytestructure
-   (wayland-server->pointer "wl_registry_interface")
-   %wl-shm-pool-interface-struct))
-
-(define (wl-shm-poll-create-buffer client resource id offset width height stride format)
-  (let ((proc (pointer->procedure
-               void
-               (bytestructure-ref %wl-shm-pool-interface 'create-buffer)
-               (list '* '*
-                     ffi:uint32
-                     ffi:int32
-                     ffi:int32
-                     ffi:int32
-                     ffi:int32
-                     ffi:uint32))))
-    (proc (unwrap-wl-client client) resource
-          id offset
-          width height
-          stride format)))
 
 (define-bytestructure-class <wl-shm-buffer> ()
   %wl-shm-buffer-struct
@@ -86,9 +56,3 @@
 
 (define %wl-shm-buffer-get-format
   (wayland-server->procedure '* "wl_shm_buffer_get_format" '(*)))
-
-;; (define (wl-shm-create-pool shm fd size)
-;;   (wl-proxy-marshal-constructor
-;;    ( shm)
-;;    WL_SHM_BUFFER_GET_FORMAT
-;;    %wl-shm-pool-interface %null-pointer fd size ))

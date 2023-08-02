@@ -1,26 +1,21 @@
 #!/usr/bin/env -S guile -e main
 !#
-(use-modules (wayland display)
-             (wayland proxy)
-             (wayland registry))
-
+(use-modules (oop goops)
+             (ice-9 format)
+             (wayland client display)
+             (wayland client protocol wayland))
 
 (define (main . _)
-  (let* ((w-display (wl-display-connect)))
-    (unless w-display
-      (display "Unable to connect to wayland compositor")
-      (newline)
-      (exit -1))
-    (display "connect to wayland compositor: ")
-    (display w-display)
-    (newline)
-    (let ((registry (wl-display-get-registry w-display))
-          (listener (make-wl-registry-listener
+  (let* ((w-display (wl-display-connect))
+         (registry (wl-display-get-registry w-display))
+         (listener (make <wl-registry-listener>
+                     #:global
                      (lambda (data registry name interface version)
-                       (pk 'add data registry name interface version))
+                       (format #t "interface: '~a', version: ~a, name: ~a~%"
+                               interface version name))
+                     #:global-remove
                      (lambda (data registry name)
-                       (pk 'remove data registry name)))))
-      (wl-registry-add-listener registry listener))
-    (wl-display-roundtrip w-display)
-    (wl-display-disconnect w-display)))
-(main)
+                       (format #t "removed: ~a~%" name)))))
+    (wl-registry-add-listener registry listener)
+    (while #t
+      (wl-display-dispatch w-display))))

@@ -1,11 +1,12 @@
 (define-module (wayland server display)
+  #:use-module (wayland server protocol wayland)
   #:use-module (ice-9 format)
   #:use-module (oop goops)
   #:use-module (wayland base)
   #:use-module (wayland event-loop)
   #:use-module (wayland util)
   #:use-module (wayland list)
-  #:use-module (wayland listener)
+  #:use-module (wayland server listener)
   #:use-module ((system foreign) #:select (null-pointer?
                                            bytevector->pointer
                                            make-pointer
@@ -28,17 +29,9 @@
   #:use-module (system foreign-object)
   #:use-module (system foreign-library)
   #:use-module (bytestructures guile)
-  #:export (%wl-display-struct
-            wrap-wl-display
-            unwrap-wl-display
-            wl-display?
-            wl-display-add-socket*))
-
-(define %wl-display-struct (bs:unknow))
-
-(define-bytestructure-class <wl-display> ()
-  %wl-display-struct
-  wrap-wl-display unwrap-wl-display wl-display?)
+  #:export (wl-display-add-socket*)
+  #:re-export (wrap-wl-display
+               unwrap-wl-display))
 
 (define-wl-server-procedure (wl-display-create)
   ('* "wl_display_create" '())

@@ -97,7 +97,7 @@
   (let ((% (wayland-client->procedure
             '* "wl_proxy_marshal_flags"
             `(* ,ffi:uint32 * ,ffi:uint32
-              ,@(make-list (length flags) ffi:uint32)))))
+                ,@(make-list (length flags) ffi:uint32)))))
     (wrap-wl-proxy
      (apply % (unwrap-wl-proxy proxy)
             opcode (unwrap-wl-interface interface)

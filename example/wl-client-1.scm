@@ -1,6 +1,6 @@
 #!/usr/bin/env -S guile -e main
 !#
-(use-modules (wayland display))
+(use-modules (wayland client display))
 
 
 (define (main . _)
