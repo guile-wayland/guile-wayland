@@ -81,7 +81,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
            pkg-config
            texinfo
            guile-3.0-latest))
-    (inputs (list guile-3.0-latest wayland))
+    (inputs (list guile-3.0-latest wayland wayland-protocols))
     (propagated-inputs
      (list
       guile-bytestructure-class

@@ -2,7 +2,7 @@
   #:use-module (wayland base)
   #:use-module (wayland util)
   #:use-module (wayland list)
-  #:use-module (wayland listener)
+  #:use-module (wayland server listener)
   #:use-module (rnrs bytevectors)
   #:use-module (bytestructures guile)
   #:use-module ((system foreign)

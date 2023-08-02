@@ -1,9 +1,9 @@
 #!/usr/bin/env -S guile -e main
 !#
 (use-modules
- (wayland listener)
- (wayland display)
- (wayland client))
+ (wayland server listener)
+ (wayland server display)
+ (wayland server client))
 
 (define (main . _)
   (let ((w-display (wl-display-create)))

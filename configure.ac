@@ -12,7 +12,6 @@ AM_SILENT_RULES([yes])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile lisp/wayland/Makefile lisp/wayland/config.scm])
-AC_CONFIG_FILES([build-aux/wayland-scanner-guile],[chmod +x build-aux/wayland-scanner-guile])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_USE_SYSTEM_EXTENSIONS
@@ -28,27 +27,18 @@ GUILE_SITE_DIR
 PKG_CHECK_MODULES([GUILE], [guile-3.0])
 PKG_CHECK_MODULES([WAYLAND_SERVER], [wayland-server])
 PKG_CHECK_VAR([WAYLAND_LIBDIR],[wayland-server],[libdir])
+PKG_CHECK_VAR([WAYLAND_DATAROOTDIR],[wayland-server],[datarootdir])
 PKG_CHECK_VAR([WAYLAND_SCANNER],[wayland-scanner],[wayland_scanner])
 PKG_CHECK_VAR([WAYLAND_PKGDATADIR],[wayland-scanner],[pkgdatadir])
-PKG_CHECK_VAR([WAYLAND_PROTOCOLS],[wayland-protocols],[pkgdatadir])
+PKG_CHECK_VAR([WAYLAND_PROTOCOLS_DATAROOTDIR],[wayland-protocols],[datarootdir])
+AC_SUBST([WAYLAND_DATAROOTDIR])
 AC_SUBST([WAYLAND_LIBDIR])
 AC_SUBST([WAYLAND_PKGDATADIR])
+AC_SUBST([WAYLAND_PROTOCOLS_DATAROOTDIR])
 LT_INIT([dlopen])
-dnl AC_SUBST([XCB_LIBDIR])
 
-#AC_CHECK_LIB()
-
-# Checks for header files.
 AC_CHECK_HEADERS([wayland-server.h])
 AC_CHECK_HEADERS([libguile.h])
-# Checks for typedefs, structures, and compiler characteristics.
-LT_INIT([dlopen])
 GUILE_MODULE_REQUIRED([bytestructures guile])
 GUILE_MODULE_REQUIRED([bytestructure-class])
-dnl LT_CONFIG_LTDL_DIR([libltdl])
-dnl LTDL_INIT
-# Checks for library functions.
-
-#AC_CHECK_LIB([guile],[scm_to_pointer])
-
 AC_OUTPUT

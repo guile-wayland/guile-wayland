@@ -1,4 +1,4 @@
-(define-module (wayland listener)
+(define-module (wayland server listener)
   #:use-module (wayland list)
   #:use-module (oop goops)
   #:use-module (wayland base)

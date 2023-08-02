@@ -1,13 +1,14 @@
-(define-module (wayland resource)
+(define-module (wayland server resource)
   #:use-module (wayland base)
   #:use-module (ice-9 format)
   #:use-module ((system foreign)
                 #:prefix ffi:)
   #:use-module (wayland util)
-  #:use-module (wayland client)
+  #:use-module (wayland server client)
   #:use-module (wayland list)
   #:use-module (wayland interface)
   #:export (%wl-resource-struct
+            <wl-resource>
             wl-resource?
             wrap-wl-resource
             unwrap-wl-resource

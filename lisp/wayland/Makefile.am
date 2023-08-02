@@ -30,7 +30,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
 libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
-libguile_wayland_la_SOURCES=listener.c
+libguile_wayland_la_SOURCES=server/listener.c interface.c
 
 lib_LTLIBRARIES = libguile-wayland.la
 
@@ -39,28 +39,23 @@ $(SOURCES):  $(lib_LTLIBRARIES)
 SOURCES = ../wayland.scm \
  base.scm            \
  argument.scm        \
- client.scm          \
  config.scm          \
  cursor.scm          \
- display.scm         \
+ client/display.scm  \
  server/display.scm  \
  server/client.scm   \
  server/global.scm   \
+ server/resource.scm \
+ server/listener.scm \
+ scanner.scm         \
+ server/protocol/wayland.scm \
+ client/protocol/wayland.scm \
+ client/protocol/xdg-shell.scm \
  egl.scm             \
  event-loop.scm      \
- global.scm          \
  interface.scm       \
- keyboard.scm        \
- protocol.scm        \
  list.scm            \
- listener.scm        \
- output.scm          \
- pointer.scm         \
  proxy.scm           \
- registry.scm        \
- resource.scm        \
  shm.scm             \
  signal.scm          \
  util.scm
-protocol.scm:
-	$(top_srcdir)/build-aux/wayland-scanner-guile > $@

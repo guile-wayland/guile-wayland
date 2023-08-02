@@ -6,23 +6,13 @@
       (map (lambda (a) (cons 'wayland (list a)))
            '(;api
                                         ;argument
-             client
              config
              cursor
-             display
              egl
              event-loop
-             global
              interface
-                                        ;keyboard
              list
-             listener
-                                        ;output
-                                        ;pointer
              proxy
-             registry
-             resource
-             ;;server-core
              shm
              signal
              util)))
