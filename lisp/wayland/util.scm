@@ -31,12 +31,14 @@
             string->pointer-address
             %wl-array-struct
             wl-container-of
+
+            wrap-wl-array
+            unwrap-wl-array
+            wl-array?
+
             wl-log-set-handler-server)
   #:export-syntax ( define-wl-server-procedure
                     define-wl-client-procedure))
-
-;; (define-syntax-rule (define-callback name)
-;;   (define name ))
 
 (define (wayland-server->pointer name)
   (dynamic-func name (dynamic-link %libwayland-server)))
@@ -90,6 +92,13 @@
   (bs:struct `((size ,size_t)
                (alloc ,size_t)
                (data ,(bs:pointer 'void)))))
+
+(define-bytestructure-class <wl-array> ()
+  %wl-array-struct
+  wrap-wl-array unwrap-wl-array wl-array?
+  (size #:getter .size)
+  (alloc #:getter .alloc)
+  (data #:getter .data))
 
 (define (wl-log-set-handler-server proc)
   (wayland-server->procedure void "wl_log_set_handler_server" '(*))
