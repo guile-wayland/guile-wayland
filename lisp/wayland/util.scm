@@ -36,9 +36,12 @@
             unwrap-wl-array
             wl-array?
 
-            wl-log-set-handler-server)
+            wl-log-set-handler-server
+            WL_MARSHAL_FLAG_DESTROY)
   #:export-syntax ( define-wl-server-procedure
                     define-wl-client-procedure))
+
+(define WL_MARSHAL_FLAG_DESTROY 1)
 
 (define (wayland-server->pointer name)
   (dynamic-func name (dynamic-link %libwayland-server)))
