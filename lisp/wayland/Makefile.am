@@ -30,7 +30,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
 libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
-libguile_wayland_la_SOURCES=server/listener.c interface.c
+libguile_wayland_la_SOURCES=server/listener.c interface.c mman.c
 
 lib_LTLIBRARIES = libguile-wayland.la
 
