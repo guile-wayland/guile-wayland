@@ -1,4 +1,5 @@
-* TODO a guile's wayland-scanner
+* DONE a guile's wayland-scanner
+CLOSED: [2023-08-11 五 21:44]
 can read a xml file and output code at runtime.
 * TODO code structure
 likes
