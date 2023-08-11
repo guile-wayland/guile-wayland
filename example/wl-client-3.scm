@@ -3,22 +3,82 @@
 (use-modules (wayland client display)
              (oop goops)
              (ice-9 format)
+             (system foreign-library)
+             ((system foreign) #:prefix ffi:)
+             (rnrs bytevectors)
              (wayland interface)
              (wayland proxy)
              (wayland client protocol wayland)
              (wayland client protocol xdg-shell))
+
+;; no idea. if use bytevector-*-set!, and some time will segment fault.
+(gc-disable)
 
 (define compositor (make-parameter #f))
 (define shm (make-parameter #f))
 (define xdg-wm-base (make-parameter #f))
 (define xdg-toplevel (make-parameter #f))
 (define wsurface (make-parameter #f))
+(define width* (make-parameter 640))
+(define height* (make-parameter 480))
 
+(define wl-buffer-listener
+  (make <wl-buffer-listener>
+    #:release (lambda (data buffer)
+                (wl-buffer-destroy buffer))))
 
+(define PROT_READ 1)
+(define PROT_WRITE 2)
+(define MAP_SHARED 1)
 
+(define memfd-create
+  (let ((% (foreign-library-function
+            #f  "memfd_create"
+            #:return-type ffi:int
+            #:arg-types `(* ,ffi:unsigned-int))))
+    (lambda (name flags)
+      (% (ffi:string->pointer name) flags))))
 
+(define mmap
+  (let ((% (foreign-library-function
+            #f  "mmap"
+            #:return-type '*
+            #:arg-types `(* ,ffi:size_t ,ffi:int ,ffi:int ,ffi:int ,ffi:long))))
+    (lambda (address length prot flags fd offset)
+      (ffi:pointer->bytevector
+       (% (or address ffi:%null-pointer) length prot flags fd offset)
+       length))))
 
+(define munmap
+  (let ((% (foreign-library-function
+            #f  "munmap"
+            #:return-type ffi:int
+            #:arg-types `(* ,ffi:size_t))))
+    (lambda* (address)
+      (%  (ffi:bytevector->pointer address)
+          (bytevector-length address)))))
 
+(define (draw-frame shm)
+  (let* ((width (width*))
+         (height (height*))
+         (stride (* 4 width) )
+         (size (* stride height))
+         (fd (memfd-create "guile-wayland-client-3" 1))
+         (_ (truncate-file fd size))
+         (data (mmap #f size (logior PROT_READ PROT_WRITE) MAP_SHARED fd 0))
+         (pool (wl-shm-create-pool shm fd size))
+         (buffer (wl-shm-pool-create-buffer
+                  pool 0
+                  width height stride
+                  WL_SHM_FORMAT_ARGB8888)))
+    (wl-shm-pool-destroy pool)
+    (close-fdes fd)
+    (for-each (lambda (x)
+                (bytevector-u32-native-set! data x #x88ff0000))
+              (iota (* width height) 0 4))
+    (munmap data)
+    (wl-buffer-add-listener buffer wl-buffer-listener)
+    buffer))
 
 (define (main . _)
   (let* ((w-display (wl-display-connect)))
@@ -69,7 +129,9 @@
          #:configure
          (lambda (data xdg-surface serial)
            (xdg-surface-ack-configure xdg-surface serial)
-           (wl-surface-commit (wsurface)))))
+           (let ((buffer (draw-frame (shm))))
+             (wl-surface-attach (wsurface) buffer 0 0)
+             (wl-surface-commit (wsurface))))))
       (wsurface surface)
       (xdg-toplevel (xdg-surface-get-toplevel xdg-surface))
 
@@ -79,15 +141,15 @@
          #:configure
          (lambda (data xdg width height states)
            (pk 'config xdg width height states)
-           )
+           (unless (zero? width)
+             (width* width))
+           (unless (zero? height)
+             (height* height)))
          #:close
          (lambda (data xdg-toplevel)
            (pk 'close xdg-toplevel)
            (format #t "exit!~%")
            (exit 0))))
-
       (xdg-toplevel-set-title (xdg-toplevel) "Example client")
-      (xdg-toplevel-set-app-id (xdg-toplevel) "guile-wayland-example")
       (wl-surface-commit surface))
-    (while #t
-      (wl-display-dispatch w-display))))
+    (while (wl-display-dispatch w-display))))
