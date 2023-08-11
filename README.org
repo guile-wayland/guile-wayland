@@ -3,14 +3,24 @@
 
 This is a WIP project.
 
-for now, provide some wayland-server api, use by guile-wlroots.
-
-https://github.com/guile-wayland/guile-wayland
+provide wayland-server api, use by guile-wlroots.
+provide wayland-client api, but cann't work with mmap see file:example/wl-client-3.scm
 
 * dep
 
-autoconf, automake, libtool, pkg-config, texinfo, guile
-wayland
-guile-bytestructures, guile-bytestructure-class
+- autoconf
+- automake
+- libtool
+- pkg-config
+- texinfo
+- guile
+- wayland
+- guile-bytestructures
+- guile-bytestructure-class
+
+* url
+
+https://github.com/guile-wayland/guile-wayland
+
 * license
 GPL3+
