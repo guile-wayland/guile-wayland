@@ -51,7 +51,7 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
 (define guile-wayland
   (package
     (name "guile-wayland")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (local-file %source-dir "guile-wayland-checkout"
                         #:recursive? #t
                         #:select? (git-predicate %source-dir)))
