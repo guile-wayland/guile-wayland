@@ -17,24 +17,11 @@ SUFFIXES = .scm .go
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_TARGET) \
 	$(GUILE_WARNINGS) -o "$@" "$<"
 
-snarfcppopts =  $(INCLUDES) $(CPPFLAGS) $(libguile_wayland_la_CFLAGS)
-
-BUILT_SOURCES= $(libguile_wayland_la_SOURCES:%.c=%.x)
-
-.c.x:
-	$(AM_V_GEN)$(top_builddir)/pre-inst-env guile-snarf -o $@ $< $(snarfcppopts)
-
 moddir=$(prefix)/share/guile/site/$(GUILE_EFFECTIVE_VERSION)/wayland
 
 godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
-libguile_wayland_la_CFLAGS=$(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
-libguile_wayland_la_LIBADD=$(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
-libguile_wayland_la_SOURCES=server/listener.c interface.c
-
-lib_LTLIBRARIES = libguile-wayland.la
-
-$(SOURCES):  $(lib_LTLIBRARIES)
+$(GOBJECTS): $(lib_LTLIBRARIES)
 
 SOURCES = ../wayland.scm \
  base.scm            \

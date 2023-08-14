@@ -2,7 +2,6 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([guile-wayland], [0.0.2], [])
-AC_CONFIG_SRCDIR([lisp])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
@@ -11,7 +10,7 @@ AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
 AM_SILENT_RULES([yes])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile lisp/wayland/Makefile lisp/wayland/config.scm])
+AC_CONFIG_FILES([Makefile modules/wayland/Makefile modules/wayland/config.scm libguile-wayland/Makefile])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_USE_SYSTEM_EXTENSIONS
