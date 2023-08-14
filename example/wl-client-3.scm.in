@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile -e main
+#!@GUILE@ --no-auto-compile -e main
 !#
 (use-modules (wayland client display)
              (oop goops)
