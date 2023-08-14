@@ -10,7 +10,14 @@ AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
 AM_SILENT_RULES([yes])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile modules/wayland/Makefile modules/wayland/config.scm libguile-wayland/Makefile])
+AC_CONFIG_FILES([Makefile
+                 modules/wayland/Makefile
+                 modules/wayland/config.scm
+                 libguile-wayland/Makefile
+                 example/wl-client-1.scm
+                 example/wl-client-2.scm
+                 example/wl-client-3.scm
+                 example/wl-server-1.scm])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_USE_SYSTEM_EXTENSIONS

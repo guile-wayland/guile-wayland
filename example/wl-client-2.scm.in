@@ -1,4 +1,4 @@
-#!/usr/bin/env -S guile -e main
+#!@GUILE@
 !#
 (use-modules (oop goops)
              (ice-9 format)

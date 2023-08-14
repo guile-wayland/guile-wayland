@@ -1,5 +1,6 @@
-#!/usr/bin/env -S guile -e main
+#!@GUILE@
 !#
+
 (use-modules
  (wayland server listener)
  (wayland server display)
