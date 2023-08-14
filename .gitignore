@@ -1,6 +1,6 @@
 .ccls-cache/
 build-aux/wayland-scanner-guile
-lisp/wayland/config.scm
+modules/wayland/config.scm
 .libs/
 .deps/
 *.x

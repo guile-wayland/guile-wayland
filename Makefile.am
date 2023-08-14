@@ -8,14 +8,15 @@ EXTRA_DIST =                                    \
 
 AM_SCM_LOG_FLAGS = --no-auto-compile
 
-TESTS= tests/display.scm
+TESTS = tests/display.scm
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
 TEST_EXTENSIONS = .scm
+
 SCM_LOG_DRIVER =                                \
   $(top_builddir)/pre-inst-env                  \
   $(GUILE) --no-auto-compile -e main            \
   $(top_srcdir)/build-aux/test-driver.scm
 
-SUBDIRS = lisp/wayland/
+SUBDIRS = modules/wayland libguile-wayland
