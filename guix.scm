@@ -58,24 +58,23 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
    (build-system gnu-build-system)
    (arguments
     (list
-     ;; #:configure-flags '(list "--disable-static")
+     #:configure-flags '(list "--disable-static")
      #:make-flags '(list "GUILE_AUTO_COMPILE=0")
      #:phases
      #~(modify-phases
         %standard-phases
-        (add-after 'build 'load-extension
+        (add-before 'build 'load-extension
                     (lambda* (#:key outputs #:allow-other-keys)
-                      (substitute* (find-files "." "\\.scm")
-                                   (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
-                                    (string-append
-                                     (object->string
-                                      `(or (false-if-exception
-                                            (load-extension "libguile-wayland" ,o))
-                                           (load-extension
-                                            ,(string-append
-                                              #$output
-                                              "/lib/libguile-wayland.so")
-                                            ,o)))))))))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib")))
+                        (invoke "make" "install"
+                                "-C" "libguile-wayland"
+                                "-j" (number->string
+                                      (parallel-job-count)))
+                        (substitute* (find-files "." "\\.scm$")
+                                     (("\"libguile-wayland\"")
+                                      (string-append "\"" lib "/libguile-wayland\"")))
+                        #t))))))
    (native-inputs
     (list autoconf
           automake
