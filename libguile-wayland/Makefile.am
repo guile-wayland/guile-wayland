@@ -3,6 +3,7 @@ lib_LTLIBRARIES = libguile-wayland.la
 libguile_wayland_la_SOURCES = server/listener.c interface.c
 libguile_wayland_la_CFLAGS = $(WAYLAND_SERVER_CFLAGS) $(GUILE_CFLAGS)
 libguile_wayland_la_LIBADD = $(WAYLAND_SERVER_LIBS) $(GUILE_LIBS)
+libguile_wayland_la_LDFLAGS = -module
 
 C_FILES = $(libguile_wayland_la_SOURCES)
 X_FILES = $(C_FILES:%.c=%.x)
