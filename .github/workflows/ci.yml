@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "ci-test"]
+    branches: [ "master", "ci-test"]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   guix-build:
