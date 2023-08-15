@@ -1,7 +1,10 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([guile-wayland], [0.0.2], [])
+AC_INIT([guile-wayland], [0.0.2],
+                         [873216071@qq.com],
+                         [guile-wayland],
+                         [https://github.com/guile-wayland/guile-wayland])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.14 gnu tar-ustar silent-rules subdir-objects \
