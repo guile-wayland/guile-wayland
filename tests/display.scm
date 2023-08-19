@@ -2,7 +2,7 @@
   #:use-module ((wayland client display) #:prefix c:)
   #:use-module ((wayland client protocol wayland) #:prefix cp:)
   #:use-module (wayland server display)
-  #:use-module (wayland event-loop)
+  #:use-module (wayland server event-loop)
   #:use-module (srfi srfi-64)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35))
