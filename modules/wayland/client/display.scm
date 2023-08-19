@@ -6,7 +6,6 @@
   #:use-module (wayland base)
   #:use-module (wayland config)
   #:use-module (wayland proxy)
-  #:use-module (wayland event-loop)
   #:use-module (wayland interface)
   #:use-module (wayland util)
   #:use-module (wayland list)

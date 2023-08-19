@@ -1,4 +1,4 @@
-(define-module (wayland event-loop)
+(define-module (wayland server event-loop)
   #:use-module (ice-9 format)
   #:use-module (wayland config)
   #:use-module (wayland base)

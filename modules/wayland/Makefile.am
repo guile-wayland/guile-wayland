@@ -34,12 +34,12 @@ SOURCES = ../wayland.scm \
  server/global.scm   \
  server/resource.scm \
  server/listener.scm \
+ server/event-loop.scm      \
  scanner.scm         \
  server/protocol/wayland.scm \
  client/protocol/wayland.scm \
  client/protocol/xdg-shell.scm \
  egl.scm             \
- event-loop.scm      \
  interface.scm       \
  list.scm            \
  proxy.scm           \

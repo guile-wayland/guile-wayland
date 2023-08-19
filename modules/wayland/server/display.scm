@@ -3,7 +3,7 @@
   #:use-module (ice-9 format)
   #:use-module (oop goops)
   #:use-module (wayland base)
-  #:use-module (wayland event-loop)
+  #:use-module (wayland server event-loop)
   #:use-module (wayland util)
   #:use-module (wayland list)
   #:use-module (wayland server listener)
