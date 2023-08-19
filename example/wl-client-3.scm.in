@@ -8,7 +8,7 @@
              ((system foreign) #:prefix ffi:)
              (rnrs bytevectors)
              (wayland interface)
-             (wayland proxy)
+             (wayland client proxy)
              (wayland client protocol wayland)
              (wayland client protocol xdg-shell))
 

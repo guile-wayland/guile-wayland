@@ -1,4 +1,4 @@
-(define-module (wayland proxy)
+(define-module (wayland client proxy)
   #:use-module (ice-9 format)
   #:use-module (wayland util)
   #:use-module (bytestructure-class)
@@ -23,12 +23,6 @@
             wl-proxy-marshal-constructor-versioned
             wl-proxy-get-user-data
             wl-proxy-get-version))
-
-;; (define-wrapped-pointer-type wl-proxy
-;;   wl-proxy?
-;;   wrap-wl-proxy unwrap-wl-proxy
-;;   (lambda (b p)
-;;     (format p "#<wl-proxy ~x>" (pointer-address (unwrap-wl-proxy b)))))
 
 (define %wl-proxy-struct (bs:unknow))
 

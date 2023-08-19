@@ -4,7 +4,7 @@
   #:use-module (wayland config)
   #:use-module ((rnrs base) #:select (assert))
   #:use-module (wayland util)
-  #:use-module (wayland proxy)
+  #:use-module (wayland client proxy)
   #:use-module (wayland interface)
   #:autoload (wayland server client) (wrap-wl-client)
   #:use-module ((system foreign) #:prefix ffi:)

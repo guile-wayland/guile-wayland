@@ -29,6 +29,7 @@ SOURCES =            \
  config.scm          \
  cursor.scm          \
  client/display.scm  \
+ client/proxy.scm    \
  server/display.scm  \
  server/client.scm   \
  server/global.scm   \
@@ -42,7 +43,6 @@ SOURCES =            \
  egl.scm             \
  interface.scm       \
  list.scm            \
- proxy.scm           \
  shm.scm             \
  signal.scm          \
  util.scm

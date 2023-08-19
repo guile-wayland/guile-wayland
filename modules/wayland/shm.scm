@@ -12,7 +12,7 @@
                  (int . ffi:int)))
   #:use-module (wayland base)
   #:use-module (wayland util)
-  #:use-module (wayland proxy)
+  #:use-module (wayland client proxy)
   #:use-module (wayland server client)
   #:use-module (wayland server resource)
   #:use-module (ice-9 format)

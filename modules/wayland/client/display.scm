@@ -5,7 +5,7 @@
   #:use-module (oop goops)
   #:use-module (wayland base)
   #:use-module (wayland config)
-  #:use-module (wayland proxy)
+  #:use-module (wayland client proxy)
   #:use-module (wayland interface)
   #:use-module (wayland util)
   #:use-module (wayland list)
