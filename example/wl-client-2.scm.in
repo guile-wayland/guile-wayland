@@ -1,4 +1,5 @@
-#!@GUILE@ --no-auto-compile -e main
+#!@GUILE@ \
+--no-auto-compile -e main
 !#
 (use-modules (oop goops)
              (ice-9 format)
