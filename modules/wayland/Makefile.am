@@ -23,7 +23,7 @@ godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache/wayland
 
 $(GOBJECTS): $(lib_LTLIBRARIES)
 
-SOURCES = ../wayland.scm \
+SOURCES =            \
  base.scm            \
  argument.scm        \
  config.scm          \
