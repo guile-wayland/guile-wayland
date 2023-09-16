@@ -4,7 +4,7 @@
 This is a WIP project.
 
 provide wayland-server api, use by guile-wlroots.
-provide wayland-client api, but cann't work with mmap see file:example/wl-client-3.scm
+provide wayland-client api, but cann't work with mmap see file:examples/wl-client-3.scm.in
 
 * dep
 

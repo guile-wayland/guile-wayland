@@ -19,4 +19,4 @@ SCM_LOG_DRIVER =                                \
   $(GUILE) --no-auto-compile -e main            \
   $(top_srcdir)/build-aux/test-driver.scm
 
-SUBDIRS = libguile-wayland modules/wayland
+SUBDIRS = examples libguile-wayland modules/wayland
