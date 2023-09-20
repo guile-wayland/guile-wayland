@@ -73,6 +73,12 @@
 (define (sxml->protocol sxml)
   (sxml-match sxml
     ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
+                         (copyright ,copyright)
+                         ;; NOTE: description in optional in protocol description
+                         (description ,description)
+                         ,interfaces ...))
+     (%make-protocol name copyright (map sxml->interface interfaces)))
+    ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
                          (copyright ,copyright) ,interfaces ...))
      (%make-protocol name copyright (map sxml->interface interfaces)))
     (,otherwise
