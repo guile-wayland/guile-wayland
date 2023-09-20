@@ -39,6 +39,7 @@
                                    '- <>))) #'(childs ...))))
          #`(begin (define-record-type cname
                     (make childs ...) check (childs get-childs) ...)))))))
+
 (define-type protocol (name copyright interfaces))
 (define-type interface (name version requests events enums))
 (define-type message (name destructor since type args))
@@ -47,27 +48,40 @@
 
 (define (file->sxml file)
   (call-with-input-file file (cut xml->sxml <> #:trim-whitespace? #t)))
-(define -->_ (cut string-map (lambda (a) (if (char=? a #\-) #\_ a)) <>))
-(define _->- (cut string-map (lambda (a) (if (char=? a #\_) #\- a)) <>))
-(define string->keyword (compose symbol->keyword string->symbol))
+
+(define -->_
+  (cut string-map (lambda (a) (if (char=? a #\-) #\_ a)) <>))
+
+(define _->-
+  (cut string-map (lambda (a) (if (char=? a #\_) #\- a)) <>))
+
+(define string->keyword
+  (compose symbol->keyword string->symbol))
+
 (define* (make-%interface-name name #:key (string? #f))
   ((compose (if string? identity string->symbol))
    (string-append "%" (_->- name) "-interface")))
+
 (define* (make-%wrap-name name #:key (string? #f))
   ((compose (if string? identity string->symbol))
    (string-append "wrap-" (_->- name))))
+
 (define* (make-%unwrap-name name #:key (string? #f))
   ((compose (if string? identity string->symbol))
    (string-append "unwrap-" (_->- name))))
+
 (define (sxml->protocol sxml)
   (sxml-match sxml
     ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
                          (copyright ,copyright) ,interfaces ...))
-     (%make-protocol name copyright (map sxml->interface (assoc-remove! interfaces 'description))))))
+     (%make-protocol name copyright (map sxml->interface interfaces)))
+    (,otherwise
+     (error (format (current-error-port)
+                    "Can't match ~a in (sxml->protocol)~%" sxml)))))
 
 (define (sxml->interface sxml)
-  (sxml-match (assoc-remove! sxml 'description)
-    ((interface (@ (name ,name) (version ,version*)) . ,rest)
+  (sxml-match sxml
+    ((interface (@ (name ,name) (version ,version*)) ,description . ,rest)
      (let* ((childs (list-transduce
                      (compose (tpartition first)
                               (tmap (lambda (x)
@@ -84,7 +98,8 @@
                         (or (assoc-ref childs 'event) '())
                         (or (assoc-ref childs 'enum) '()))))
     (,otherwise
-     (error "Can't match in (sxml->interface)~%" sxml))))
+     (error (format (current-error-port)
+                    "Can't match ~a in (sxml->interface)~%" sxml)))))
 
 (define (c-num->scm-num s)
   (or (if (string-prefix? "0x" s )
@@ -93,8 +108,9 @@
       (throw 'convert-c-num-fail s)))
 
 (define (sxml->message/enum sxml)
-  (sxml-match (assoc-remove! sxml 'description)
+  (sxml-match sxml
     ((event (@ (name ,name) (since (,since #f)) (type (,type #f)))
+            ,description
             (arg (@ (type ,arg-type)
                     (name ,(_->- -> arg-name))
                     (interface (,arg-interface-type #f))
@@ -108,6 +124,7 @@
                                           (_->- arg-interface-type))
                                      (->bool allow-null)) ...)))
     ((request (@ (name ,name) (since (,since #f)) (type (,type #f)))
+              ,description
               (arg (@ (type ,arg-type)
                       (name ,(_->- -> arg-name))
                       (interface (,arg-interface-type #f))
@@ -120,32 +137,43 @@
                                           (_->- arg-interface-type))
                                      (->bool allow-null)) ...)))
     ((enum (@ (name ,name) (bitfield (,bitfield #f)))
+           (description ,description)
            (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
      (%make-enum (_->- name)
                  (list (cons entry-name (c-num->scm-num entry-value)) ...)
                  (->bool bitfield)))
-    (,rest (throw 'no-found sxml))))
+    ((enum (@ (name ,name) (bitfield (,bitfield #f)))
+           (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
+     (%make-enum (_->- name)
+                 (list (cons entry-name (c-num->scm-num entry-value)) ...)
+                 (->bool bitfield)))
+    (,rest (throw 'no-found rest ))))
 
 (define (new-id-handle arg is no-i no)
   (if (string= (arg-type arg) "new_id") (if (arg-interface arg) is no-i) no))
+
 (define (is-nullable-type? type)
   (member type '("string" "object")))
+
 
 (define (arg-type->ffi type)
   (cond ((equal? type "uint") (list #`ffi:uint32))
         ((member type '("int" "fixed")) (list #`ffi:int32))
         ((equal? type "fd") (list #`ffi:int))
         ((member type '("new_id" "string" "array" "object")) (list #`'*))))
+
 (define (message-singature m)
   (apply string-append
          (or (message-since m) "")
          (map arg->signature (message-args m))))
+
 (define (arg->signature arg)
+  (define type (string->symbol (arg-type arg)))
   (define itype (arg-interface arg))
   (define allow-null? (arg-allow-null? arg))
   (string-append
-   (if (or (is-nullable-type? (arg-type arg)) allow-null?) "?" "")
-   (case (string->symbol (arg-type arg))
+   (if (and (is-nullable-type? type) allow-null?) "?" "")
+   (case type
      ((int) "i")
      ((new_id) (if itype "n" "sun"))
      ((uint) "u")
@@ -155,9 +183,12 @@
      ((array) "a")
      ((fd) "h"))))
 
+
+;; TODO: find a way to make use-wayland-protocol less nested, move more stuff to toplevel
 (define-syntax use-wayland-protocol
   (lambda (x)
     (define ->syntax (cut datum->syntax x <>))
+
     (define* (protocol->code protocol #:key (type 'server))
       (assert (protocol? protocol))
       (append (append-map (lambda (interface)
@@ -230,6 +261,7 @@
                 (list (list requests ...) ...)
                 (list (list events ...) ...)))
              (export %name)))))
+
     (define* (interface->interface-struct interface #:key (type 'server))
       (let* ((%name (string->symbol (interface-name interface))))
         (with-syntax ((bname (->syntax (symbol-append '% %name '-struct)))
@@ -255,13 +287,13 @@
                                #'()
                                #'((define* (add-listener-name obj listener #:optional (data ffi:%null-pointer))
                                     (assert (check obj))
-                                    (wl-proxy-add-listener obj (unwrap-listener listener) data))
-                                  (export add-listener-name)))
+                                    (wl-proxy-add-listener obj (unwrap-listener listener) data))))
                         (define (get-version obj)
                           (assert (check obj)) (wl-proxy-get-version obj))
                         (define (get-user-data obj)
                           (assert (check obj)) (wl-proxy-get-user-data obj))
-                        (export get-version get-user-data)))))))))
+                        (export add-listener-name get-version get-user-data)))))))))
+
     (define (interface->struct-code interface type)
       (assert (interface? interface))
       (define iname (interface-name interface))
@@ -350,6 +382,7 @@
                                             ((->bool proc) (throw 'wayland-init-fail keyword proc))
                                             (else ffi:%null-pointer)))) ...
                                             initargs)))))))
+
     (define (message->procedure-code request iname index type)
       (assert (and (message? request)
                    (eq? (message-type request)
@@ -487,6 +520,7 @@
                             (enum-values enum))))
           #`((define-public bs-name (bs:enum '((enames evalues) ...)))
              (define-public enames evalues) ...))))
+
     (syntax-case x ()
       ((_ (xml-path a ...))
        #`(begin #,@(apply protocol->code
