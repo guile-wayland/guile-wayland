@@ -66,11 +66,11 @@
       (sxml-match sxml
         ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
                              (copyright ,copyright) ,interfaces ...))
-         (%make-protocol name copyright (map sxml->interface interfaces)))))
+         (%make-protocol name copyright (map sxml->interface (assoc-remove! interfaces 'description))))))
 
     (define (sxml->interface sxml)
-      (sxml-match sxml
-        ((interface (@ (name ,name) (version ,version*)) ,description . ,rest)
+      (sxml-match (assoc-remove! sxml 'description)
+        ((interface (@ (name ,name) (version ,version*)) . ,rest)
          (let* ((childs (list-transduce
                          (compose (tpartition first)
                                   (tmap (lambda (x)
@@ -85,7 +85,8 @@
            (%make-interface (_->- name) (string->number version*)
                             (or (assoc-ref childs 'request) '())
                             (or (assoc-ref childs 'event) '())
-                            (or (assoc-ref childs 'enum) '()))))))
+                            (or (assoc-ref childs 'enum) '()))))
+        (,rest (throw 'sxml->interface rest))))
 
     (define (c-num->scm-num s)
       (or (if (string-prefix? "0x" s )
@@ -93,9 +94,8 @@
               (string->number s 10))
           (throw 'convert-c-num-fail s)))
     (define (sxml->message/enum sxml)
-      (sxml-match sxml
+      (sxml-match (assoc-remove! sxml 'description)
         ((event (@ (name ,name) (since (,since #f)) (type (,type #f)))
-                ,description
                 (arg (@ (type ,arg-type)
                         (name ,(_->- -> arg-name))
                         (interface (,arg-interface-type #f))
@@ -109,7 +109,6 @@
                                               (_->- arg-interface-type))
                                          (->bool allow-null)) ...)))
         ((request (@ (name ,name) (since (,since #f)) (type (,type #f)))
-                  ,description
                   (arg (@ (type ,arg-type)
                           (name ,(_->- -> arg-name))
                           (interface (,arg-interface-type #f))
@@ -122,17 +121,11 @@
                                               (_->- arg-interface-type))
                                          (->bool allow-null)) ...)))
         ((enum (@ (name ,name) (bitfield (,bitfield #f)))
-               (description ,description)
                (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
          (%make-enum (_->- name)
                      (list (cons entry-name (c-num->scm-num entry-value)) ...)
                      (->bool bitfield)))
-        ((enum (@ (name ,name) (bitfield (,bitfield #f)))
-               (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
-         (%make-enum (_->- name)
-                     (list (cons entry-name (c-num->scm-num entry-value)) ...)
-                     (->bool bitfield)))
-        (,rest (throw 'no-found rest ))))
+        (,rest (throw 'no-found sxml))))
 
     (define* (protocol->code protocol #:key (type 'server))
       (assert (protocol? protocol))
@@ -257,12 +250,13 @@
                                #'()
                                #'((define* (add-listener-name obj listener #:optional (data ffi:%null-pointer))
                                     (assert (check obj))
-                                    (wl-proxy-add-listener obj (unwrap-listener listener) data))))
+                                    (wl-proxy-add-listener obj (unwrap-listener listener) data))
+                                  (export add-listener-name)))
                         (define (get-version obj)
                           (assert (check obj)) (wl-proxy-get-version obj))
                         (define (get-user-data obj)
                           (assert (check obj)) (wl-proxy-get-user-data obj))
-                        (export add-listener-name get-version get-user-data)))))))))
+                        (export get-version get-user-data)))))))))
     (define (interface->struct-code interface type)
       (assert (interface? interface))
       (define iname (interface-name interface))
