@@ -1,26 +1,37 @@
 # -*- mode: org; -*-
-#+title: guile-wayland.
+#+title: guile-wayland
 
-This is a WIP project.
+[[file:logo.svg]]
 
-provide wayland-server api, use by guile-wlroots.
-provide wayland-client api, but cann't work with mmap see file:example/wl-client-3.scm
+[[Build Status][https://github.com/guile-wayland/guile-wayland/actions/workflows/ci.yml/badge.svg]]
 
-* dep
+Guile-Wayland is library that provides access to the [[https://wayland.freedesktop.org/][Wayland Protocol]] for programs written in [[https://www.gnu.org/software/guile][GNU Guile Scheme]].
 
-- autoconf
-- automake
-- libtool
-- pkg-config
-- texinfo
-- guile
-- wayland
-- guile-bytestructures
-- guile-bytestructure-class
-
-* url
-
-https://github.com/guile-wayland/guile-wayland
-
-* license
-GPL3+
+* Features
+- The main feature is auto-generating Guile Code ([[https://www.gnu.org/software/guile/manual/html_node/GOOPS.html][GOOPs]] classes) from Wayland's XML descriptions, minimizing direct C interop. See ~(@@ (wayland scanner) use-wayland-protocol)~
+- To simplify this a separate library [[https://github.com/Z572/guile-bytestructure-class][guile-bytestructure-class]] was written. It's based on [[https://github.com/TaylanUB/scheme-bytestructures][scheme-bytestructures]]
+* Requirements
+- Autoconf
+- Automake
+- Libtool
+- Pkg-config
+- Texinfo
+- Guile
+- Wayland
+- Scheme-bytestructures
+- Guile-bytestructure-class
+* Distribution
+Directories:
+- example - examples of guile-wayland-usage
+- libguile-wayland - sources of the library (.c)
+- modules - scheme modules (.scm)
+- tests - unit tests
+* Installation
+The library can be installed by the following means:
+- Using GNU Guix: ~guix package -f guix.scm~. It's much recommended to do so.
+- Manually (assuming you are familiar with GNU Make & friends)
+* Development
+It's recommended to use [[guix.gnu.org/][GNU Guix ]]with [[https://www.gnu.org/software/emacs/][GNU Emacs]] (with [[https://gitlab.com/emacs-geiser/guile][guile-geiser]]) or any other modern convenient Guile development environment available to work on this library.
+For quick interactivity launch the repl ([[file:repl.sh][repl.sh]]) and connect to it with your IDE.
+* License
+Guile-Wayland is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Please see COPYING file for the terms of GNU General Public License.
