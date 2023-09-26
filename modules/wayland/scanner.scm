@@ -20,113 +20,144 @@
   #:use-module (bytestructure-class)
   #:export (use-wayland-protocol))
 
+(define-syntax define-type
+  (lambda (x)
+    (define (change-syntax obj proc)
+      (datum->syntax
+       x (proc (syntax->datum obj))
+       #:source obj))
+    (syntax-case x ()
+      ((_ name (childs ...))
+       (with-syntax ((cname (change-syntax #'name (cut symbol-append '< <> '>)))
+                     (make (change-syntax #'name (cut symbol-append '%make- <>)))
+                     (check (change-syntax #'name (cut symbol-append  <> '?)))
+                     ((get-childs ...)
+                      (map (lambda (o)
+                             (change-syntax
+                              o
+                              (cut symbol-append (syntax->datum #'name)
+                                   '- <>))) #'(childs ...))))
+         #`(begin (define-record-type cname
+                    (make childs ...) check (childs get-childs) ...)))))))
+(define-type protocol (name copyright interfaces))
+(define-type interface (name version requests events enums))
+(define-type message (name destructor since type args))
+(define-type enum (name values bitfield?))
+(define-type arg (name type interface allow-null?))
+
+(define (file->sxml file)
+  (call-with-input-file file (cut xml->sxml <> #:trim-whitespace? #t)))
+(define -->_ (cut string-map (lambda (a) (if (char=? a #\-) #\_ a)) <>))
+(define _->- (cut string-map (lambda (a) (if (char=? a #\_) #\- a)) <>))
+(define string->keyword (compose symbol->keyword string->symbol))
+(define* (make-%interface-name name #:key (string? #f))
+  ((compose (if string? identity string->symbol))
+   (string-append "%" (_->- name) "-interface")))
+(define* (make-%wrap-name name #:key (string? #f))
+  ((compose (if string? identity string->symbol))
+   (string-append "wrap-" (_->- name))))
+(define* (make-%unwrap-name name #:key (string? #f))
+  ((compose (if string? identity string->symbol))
+   (string-append "unwrap-" (_->- name))))
+(define (sxml->protocol sxml)
+  (sxml-match sxml
+    ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
+                         (copyright ,copyright) ,interfaces ...))
+     (%make-protocol name copyright (map sxml->interface (assoc-remove! interfaces 'description))))))
+
+(define (sxml->interface sxml)
+  (sxml-match (assoc-remove! sxml 'description)
+    ((interface (@ (name ,name) (version ,version*)) . ,rest)
+     (let* ((childs (list-transduce
+                     (compose (tpartition first)
+                              (tmap (lambda (x)
+                                      (cons (caar x)
+                                            (map sxml->message/enum x)))))
+                     rcons
+                     (sort rest
+                           (lambda (x x2)
+                             (string>
+                              (symbol->string (first x))
+                              (symbol->string (first x2))))))))
+       (%make-interface (_->- name) (string->number version*)
+                        (or (assoc-ref childs 'request) '())
+                        (or (assoc-ref childs 'event) '())
+                        (or (assoc-ref childs 'enum) '()))))
+    (,otherwise
+     (error "Can't match in (sxml->interface)~%" sxml))))
+
+(define (c-num->scm-num s)
+  (or (if (string-prefix? "0x" s )
+          (string->number (substring s 2) 16)
+          (string->number s 10))
+      (throw 'convert-c-num-fail s)))
+
+(define (sxml->message/enum sxml)
+  (sxml-match (assoc-remove! sxml 'description)
+    ((event (@ (name ,name) (since (,since #f)) (type (,type #f)))
+            (arg (@ (type ,arg-type)
+                    (name ,(_->- -> arg-name))
+                    (interface (,arg-interface-type #f))
+                    (allow-null (,allow-null #f)))) ...)
+     (%make-message (_->- name)
+                    (and type (string=? type "destructor"))
+                    since
+                    'event
+                    (list (%make-arg arg-name arg-type
+                                     (and arg-interface-type
+                                          (_->- arg-interface-type))
+                                     (->bool allow-null)) ...)))
+    ((request (@ (name ,name) (since (,since #f)) (type (,type #f)))
+              (arg (@ (type ,arg-type)
+                      (name ,(_->- -> arg-name))
+                      (interface (,arg-interface-type #f))
+                      (allow-null (,allow-null #f)))) ...)
+     (%make-message (_->- name)
+                    (and type (string=? type "destructor"))
+                    since 'request
+                    (list (%make-arg arg-name arg-type
+                                     (and arg-interface-type
+                                          (_->- arg-interface-type))
+                                     (->bool allow-null)) ...)))
+    ((enum (@ (name ,name) (bitfield (,bitfield #f)))
+           (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
+     (%make-enum (_->- name)
+                 (list (cons entry-name (c-num->scm-num entry-value)) ...)
+                 (->bool bitfield)))
+    (,rest (throw 'no-found sxml))))
+
+(define (new-id-handle arg is no-i no)
+  (if (string= (arg-type arg) "new_id") (if (arg-interface arg) is no-i) no))
+(define (is-nullable-type? type)
+  (member type '("string" "object")))
+
+(define (arg-type->ffi type)
+  (cond ((equal? type "uint") (list #`ffi:uint32))
+        ((member type '("int" "fixed")) (list #`ffi:int32))
+        ((equal? type "fd") (list #`ffi:int))
+        ((member type '("new_id" "string" "array" "object")) (list #`'*))))
+(define (message-singature m)
+  (apply string-append
+         (or (message-since m) "")
+         (map arg->signature (message-args m))))
+(define (arg->signature arg)
+  (define itype (arg-interface arg))
+  (define allow-null? (arg-allow-null? arg))
+  (string-append
+   (if (or (is-nullable-type? (arg-type arg)) allow-null?) "?" "")
+   (case (string->symbol (arg-type arg))
+     ((int) "i")
+     ((new_id) (if itype "n" "sun"))
+     ((uint) "u")
+     ((fixed) "f")
+     ((string) "s")
+     ((object) "o")
+     ((array) "a")
+     ((fd) "h"))))
+
 (define-syntax use-wayland-protocol
   (lambda (x)
-    (define-syntax define-type
-      (lambda (x)
-        (define (change-syntax obj proc)
-          (datum->syntax
-           x (proc (syntax->datum obj))
-           #:source obj))
-        (syntax-case x ()
-          ((_ name (childs ...))
-           (with-syntax ((cname (change-syntax #'name (cut symbol-append '< <> '>)))
-                         (make (change-syntax #'name (cut symbol-append '%make- <>)))
-                         (check (change-syntax #'name (cut symbol-append  <> '?)))
-                         ((get-childs ...)
-                          (map (lambda (o)
-                                 (change-syntax
-                                  o
-                                  (cut symbol-append (syntax->datum #'name)
-                                       '- <>))) #'(childs ...))))
-             #`(begin (define-record-type cname
-                        (make childs ...) check (childs get-childs) ...)))))))
-    (define-type protocol (name copyright interfaces))
-    (define-type interface (name version requests events enums))
-    (define-type message (name destructor since type args))
-    (define-type enum (name values bitfield?))
-    (define-type arg (name type interface allow-null?))
-
     (define ->syntax (cut datum->syntax x <>))
-    (define (file->sxml file)
-      (call-with-input-file file (cut xml->sxml <> #:trim-whitespace? #t)))
-    (define -->_ (cut string-map (lambda (a) (if (char=? a #\-) #\_ a)) <>))
-    (define _->- (cut string-map (lambda (a) (if (char=? a #\_) #\- a)) <>))
-    (define string->keyword (compose symbol->keyword string->symbol))
-    (define* (make-%interface-name name #:key (string? #f))
-      ((compose (if string? identity string->symbol))
-       (string-append "%" (_->- name) "-interface")))
-    (define* (make-%wrap-name name #:key (string? #f))
-      ((compose (if string? identity string->symbol))
-       (string-append "wrap-" (_->- name))))
-    (define* (make-%unwrap-name name #:key (string? #f))
-      ((compose (if string? identity string->symbol))
-       (string-append "unwrap-" (_->- name))))
-    (define (sxml->protocol sxml)
-      (sxml-match sxml
-        ((*TOP* ,_ (protocol (@ (name ,(_->- -> name)))
-                             (copyright ,copyright) ,interfaces ...))
-         (%make-protocol name copyright (map sxml->interface (assoc-remove! interfaces 'description))))))
-
-    (define (sxml->interface sxml)
-      (sxml-match (assoc-remove! sxml 'description)
-        ((interface (@ (name ,name) (version ,version*)) . ,rest)
-         (let* ((childs (list-transduce
-                         (compose (tpartition first)
-                                  (tmap (lambda (x)
-                                          (cons (caar x)
-                                                (map sxml->message/enum x)))))
-                         rcons
-                         (sort rest
-                               (lambda (x x2)
-                                 (string>
-                                  (symbol->string (first x))
-                                  (symbol->string (first x2))))))))
-           (%make-interface (_->- name) (string->number version*)
-                            (or (assoc-ref childs 'request) '())
-                            (or (assoc-ref childs 'event) '())
-                            (or (assoc-ref childs 'enum) '()))))
-        (,rest (throw 'sxml->interface rest))))
-
-    (define (c-num->scm-num s)
-      (or (if (string-prefix? "0x" s )
-              (string->number (substring s 2) 16)
-              (string->number s 10))
-          (throw 'convert-c-num-fail s)))
-    (define (sxml->message/enum sxml)
-      (sxml-match (assoc-remove! sxml 'description)
-        ((event (@ (name ,name) (since (,since #f)) (type (,type #f)))
-                (arg (@ (type ,arg-type)
-                        (name ,(_->- -> arg-name))
-                        (interface (,arg-interface-type #f))
-                        (allow-null (,allow-null #f)))) ...)
-         (%make-message (_->- name)
-                        (and type (string=? type "destructor"))
-                        since
-                        'event
-                        (list (%make-arg arg-name arg-type
-                                         (and arg-interface-type
-                                              (_->- arg-interface-type))
-                                         (->bool allow-null)) ...)))
-        ((request (@ (name ,name) (since (,since #f)) (type (,type #f)))
-                  (arg (@ (type ,arg-type)
-                          (name ,(_->- -> arg-name))
-                          (interface (,arg-interface-type #f))
-                          (allow-null (,allow-null #f)))) ...)
-         (%make-message (_->- name)
-                        (and type (string=? type "destructor"))
-                        since 'request
-                        (list (%make-arg arg-name arg-type
-                                         (and arg-interface-type
-                                              (_->- arg-interface-type))
-                                         (->bool allow-null)) ...)))
-        ((enum (@ (name ,name) (bitfield (,bitfield #f)))
-               (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
-         (%make-enum (_->- name)
-                     (list (cons entry-name (c-num->scm-num entry-value)) ...)
-                     (->bool bitfield)))
-        (,rest (throw 'no-found sxml))))
-
     (define* (protocol->code protocol #:key (type 'server))
       (assert (protocol? protocol))
       (append (append-map (lambda (interface)
@@ -166,10 +197,7 @@
                          (list (list requests-types ...) ...)
                          (list (list events-types ...) ...))))))
                (protocol-interfaces protocol))))
-    (define (new-id-handle arg is no-i no)
-      (if (string= (arg-type arg) "new_id") (if (arg-interface arg) is no-i) no))
-    (define (is-nullable-type? type)
-      (member type '("string" "object")))
+
     (define* (arg->unwrap-sexp i wraped-obj #:optional (server? #t))
       (define type (arg-type i))
       (cond
@@ -184,30 +212,7 @@
                 #`(#,(->syntax (make-%unwrap-name (arg-interface i)))
                    #,(->syntax (string->symbol (arg-name i)))))))
        ((equal? type "array") #`(unwrap-wl-array #,wraped-obj))))
-    (define (arg-type->ffi type)
-      (cond ((equal? type "uint") (list #`ffi:uint32))
-            ((member type '("int" "fixed")) (list #`ffi:int32))
-            ((equal? type "fd") (list #`ffi:int))
-            ((member type '("new_id" "string" "array" "object")) (list #`'*))))
-    (define (message-singature m)
-      (apply string-append
-             (or (message-since m) "")
-             (map arg->signature (message-args m))))
-    (define (arg->signature arg)
-      (define type (string->symbol (arg-type arg)))
-      (define itype (arg-interface arg))
-      (define allow-null? (arg-allow-null? arg))
-      (string-append
-       (if (and (is-nullable-type? type) allow-null?) "?" "")
-       (case type
-         ((int) "i")
-         ((new_id) (if itype "n" "sun"))
-         ((uint) "u")
-         ((fixed) "f")
-         ((string) "s")
-         ((object) "o")
-         ((array) "a")
-         ((fd) "h"))))
+
     (define* (interface->code interface)
       (let* ((name (interface-name interface))
 
