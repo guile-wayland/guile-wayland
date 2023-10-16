@@ -112,7 +112,7 @@
                     (and type (string=? type "destructor"))
                     since
                     'event
-                    (list '())))
+                    (list)))
     ((request (@ (name ,name) (since (,since #f)) (type (,type #f)))
               (arg (@ (type ,arg-type)
                       (name ,(_->- -> arg-name))
@@ -129,7 +129,7 @@
      (%make-message (_->- name)
                     (and type (string=? type "destructor"))
                     #f 'request
-                    (list '())))
+                    (list)))
     ((enum (@ (name ,name) (bitfield (,bitfield #f)))
            (entry (@ (name ,entry-name) (value ,entry-value)) . ,rest) ...)
      (%make-enum (_->- name)
