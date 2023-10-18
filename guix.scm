@@ -53,7 +53,7 @@
                (("/usr/share/hwdata/pnp.ids")
                 (string-append (assoc-ref (or native-inputs inputs) "hwdata")
                                "/share/hwdata/pnp.ids")))))
-         (add-after 'install 'copy-protocols
+         (add-before 'configure 'copy-protocols
            ;; NOTE: exposed protocols files
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (mkdir-p "protocols")
@@ -61,7 +61,8 @@
               "protocol" ;; why singular?!
               (string-append (assoc-ref outputs "out")
                              "/protocols"))
-             #t)))))
+             #t))
+         )))
     (propagated-inputs
      (list ;; As required by wlroots.pc.
       eudev
@@ -94,33 +95,33 @@ modules for building a Wayland compositor.")
 
 (define-public guile-bytestructure-class
   (package
-   (name "guile-bytestructure-class")
-   (version "0.2.0")
-   (source (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/Z572/guile-bytestructure-class")
-                  (commit (string-append "v" version))))
-            (file-name (git-file-name name version))
-            (sha256
-             (base32
-              "0y3sryy79arp3f5smyxn8w7zra3j4bb0qdpl1p0bld3jicc4s86a"))))
-   (build-system gnu-build-system)
-   (arguments
-    (list #:make-flags #~'("GUILE_AUTO_COMPILE=0")))
-   (native-inputs
-    (list autoconf
-          automake
-          pkg-config
-          guile-3.0-latest))
-   (inputs (list guile-3.0-latest))
-   (propagated-inputs (list guile-bytestructures))
-   (synopsis "bytestructure and goops")
-   (description "This package combines bytestructure with goops,
+    (name "guile-bytestructure-class")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Z572/guile-bytestructure-class")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0y3sryy79arp3f5smyxn8w7zra3j4bb0qdpl1p0bld3jicc4s86a"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags #~'("GUILE_AUTO_COMPILE=0")))
+    (native-inputs
+     (list autoconf
+           automake
+           pkg-config
+           guile-3.0-latest))
+    (inputs (list guile-3.0-latest))
+    (propagated-inputs (list guile-bytestructures))
+    (synopsis "bytestructure and goops")
+    (description "This package combines bytestructure with goops,
 and provide 4 new bytestructure-descriptor:
 bs:unknow, cstring-pointer*, bs:enum, stdbool.")
-   (home-page "https://github.com/Z572/guile-bytestructure-class")
-   (license license:gpl3+)))
+    (home-page "https://github.com/Z572/guile-bytestructure-class")
+    (license license:gpl3+)))
 
 (define guile-wayland
   (package
@@ -135,8 +136,15 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
       #:configure-flags '(list "--disable-static")
       #:make-flags '(list "GUILE_AUTO_COMPILE=0")
       #:phases
-      #~(modify-phases
-            %standard-phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'expose-protocols
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "modules/wayland/config.scm.in"
+                (("@WAYLAND_PROTOCOLS_DATAROOTDIR@")
+                 (string-append
+                  (assoc-ref %build-inputs "wlroots")
+                  "/protocols")))
+              #t))
           (add-before 'build 'load-extension
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
@@ -149,13 +157,15 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
                   (("\"libguile-wayland\"")
                    (string-append "\"" lib "/libguile-wayland\"")))))))))
     (native-inputs
-     (list autoconf
-           automake
-           libtool
-           pkg-config
-           texinfo
-           guile-3.0-latest))
-    (inputs (list guile-3.0-latest wayland wayland-protocols))
+     (list
+      autoconf
+      automake
+      libtool
+      pkg-config
+      texinfo
+      guile-3.0-latest))
+    (inputs (list guile-3.0-latest wayland wayland-protocols
+                  wlroots))
     (propagated-inputs
      (list
       guile-bytestructure-class
