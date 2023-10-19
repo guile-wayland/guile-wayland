@@ -5,9 +5,21 @@
             %libwayland-cursor
             %wayland-protocol
             %wayland-protocols-dir))
-(define %wayland-libdir "@WAYLAND_LIBDIR@/")
-(define %wayland-protocol "@WAYLAND_DATAROOTDIR@/wayland/wayland.xml")
-(define %wayland-protocols-dir "@WAYLAND_PROTOCOLS_DATAROOTDIR@")
-(define %libwayland-server (string-append %wayland-libdir "libwayland-server.so"))
-(define %libwayland-client (string-append %wayland-libdir "libwayland-client.so"))
-(define %libwayland-cursor (string-append %wayland-libdir "libwayland-cursor.so"))
+
+(define %wayland-libdir
+  "@WAYLAND_LIBDIR@/")
+
+(define %wayland-protocol
+  "@WAYLAND_DATAROOTDIR@/wayland/wayland.xml")
+
+(define %wayland-protocols-dir
+  "@WAYLAND_PROTOCOLS_DATAROOTDIR@")
+
+(define %libwayland-server
+  (string-append %wayland-libdir "libwayland-server.so"))
+
+(define %libwayland-client
+  (string-append %wayland-libdir "libwayland-client.so"))
+
+(define %libwayland-cursor
+  (string-append %wayland-libdir "libwayland-cursor.so"))
