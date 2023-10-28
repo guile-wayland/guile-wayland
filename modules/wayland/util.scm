@@ -37,8 +37,10 @@
             wl-array?
 
             wl-log-set-handler-server
-            WL_MARSHAL_FLAG_DESTROY)
-  #:export-syntax ( define-wl-server-procedure
+            WL_MARSHAL_FLAG_DESTROY
+
+            xml)
+  #:export-syntax (define-wl-server-procedure
                     define-wl-client-procedure))
 
 (define WL_MARSHAL_FLAG_DESTROY 1)
@@ -121,3 +123,6 @@
             (bytestructure bs)
             member))))
       bs))))
+
+(define (xml name)
+  (string-append %wayland-protocols-dir "/" name ".xml"))
