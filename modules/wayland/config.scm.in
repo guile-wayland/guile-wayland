@@ -6,6 +6,9 @@
             %wayland-protocol
             %wayland-protocols-dir))
 
+(define %xml-paths
+  (getenv "WAYLAND_PROTOCOLS_XMLS"))
+
 (define %wayland-libdir
   "@WAYLAND_LIBDIR@/")
 
