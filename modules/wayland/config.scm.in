@@ -1,10 +1,14 @@
 (define-module (wayland config)
-  #:export (%wayland-libdir
+  #:export (%xml-paths
+            %wayland-libdir
             %libwayland-client
             %libwayland-server
             %libwayland-cursor
             %wayland-protocol
             %wayland-protocols-dir))
+
+(define %xml-paths
+  (parse-path (getenv "WAYLAND_PROTOCOLS_XMLS_PATH")))
 
 (define %wayland-libdir
   "@WAYLAND_LIBDIR@/")

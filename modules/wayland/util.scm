@@ -5,6 +5,9 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-69)
+  #:use-module (ice-9 format)
+  #:use-module (guix build utils)
   #:use-module ((system foreign)
                 #:select (null-pointer?
                           bytevector->pointer
@@ -124,5 +127,13 @@
             member))))
       bs))))
 
+(define xmls
+  (alist->hash-table
+   (map
+    (lambda (x) (cons (first (string-split (basename x) #\.)) x))
+    (append-map
+     (lambda (path)
+       (find-files path "\\.xml$")) %xml-paths))))
+
 (define (xml name)
-  (string-append %wayland-protocols-dir "/" name ".xml"))
+  (hash-table-ref xmls name))
