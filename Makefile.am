@@ -8,7 +8,7 @@ EXTRA_DIST =                                    \
 
 AM_SCM_LOG_FLAGS = --no-auto-compile
 
-TESTS = tests/display.scm tests/list.scm
+TESTS = tests/display.scm tests/list.scm tests/scanner.scm
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
