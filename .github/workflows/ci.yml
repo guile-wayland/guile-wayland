@@ -14,10 +14,6 @@ jobs:
     steps:
     - name: Install Guix
       run: sudo apt-get install -y guix
-    - name: update Guix
-      run: guix pull -c$(nproc) -M 8
-    - name: restart Guix
-      run: sudo systemctl restart guix-daemon.service
     - uses: actions/checkout@v3
     - name: guix build
-      run: guix build -f guix.scm
+      run: guix time-machine -c$(nproc) -M 8 -- build -f guix.scm -c$(nproc) -M 8
