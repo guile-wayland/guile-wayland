@@ -12,18 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    - name: Guix cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/guix
-        key:  ${{runner.OS}}-guix
-        restore-keys: |
-          guix-cache-
     - name: Install Guix
-      id: install-guix
-      uses: PromyLOPh/guix-install-action@v1
-
+      run: sudo apt-get install -y guix
+    - name: update Guix
+      run: guix pull
+    - name: restart Guix
+      run: sudo systemctl restart guix-daemon.service
     - uses: actions/checkout@v3
-    - name: build
+    - name: guix build
       run: guix build -f guix.scm
