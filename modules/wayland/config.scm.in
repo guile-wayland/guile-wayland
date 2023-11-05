@@ -1,4 +1,5 @@
 (define-module (wayland config)
+  #:use-module (ice-9 format)
   #:export (%wayland-libdir
             %libwayland-client
             %libwayland-server
@@ -8,6 +9,8 @@
 
 (define %xml-paths
   (getenv "WAYLAND_PROTOCOLS_XMLS"))
+
+(format #t "xmls: ~a ~%" %xml-paths)
 
 (define %wayland-libdir
   "@WAYLAND_LIBDIR@/")
