@@ -50,45 +50,47 @@ bs:unknow, cstring-pointer*, bs:enum, stdbool.")
 
 (define guile-wayland
   (package
-    (name "guile-wayland")
-    (version "0.0.2")
-    (source (local-file %source-dir "guile-wayland-checkout"
-                        #:recursive? #t
-                        #:select? (git-predicate %source-dir)))
-    (build-system gnu-build-system)
-    (arguments
-     (list
-      #:configure-flags '(list "--disable-static")
-      #:make-flags '(list "GUILE_AUTO_COMPILE=0")
-      #:phases
-      #~(modify-phases
-            %standard-phases
-          (add-before 'build 'load-extension
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (lib (string-append out "/lib")))
-                (invoke "make" "install"
-                        "-C" "libguile-wayland"
-                        "-j" (number->string
-                              (parallel-job-count)))
-                (substitute* (find-files "." "\\.scm$")
-                  (("\"libguile-wayland\"")
-                   (string-append "\"" lib "/libguile-wayland\"")))))))))
-    (native-inputs
-     (list autoconf
-           automake
-           libtool
-           pkg-config
-           texinfo
-           guile-3.0-latest))
-    (inputs (list guile-3.0-latest wayland wayland-protocols))
-    (propagated-inputs
-     (list
-      guile-bytestructure-class
-      guile-bytestructures))
-    (synopsis "")
-    (description "")
-    (home-page "https://github.com/guile-wayland/guile-wayland")
-    (license license:gpl3+)))
+   (name "guile-wayland")
+   (version "0.0.2")
+   (source (local-file %source-dir "guile-wayland-checkout"
+                       #:recursive? #t
+                       #:select? (git-predicate %source-dir)))
+   (build-system gnu-build-system)
+   (arguments
+    (list
+     ;; #:configure-flags '(list "--disable-static")
+     #:make-flags '(list "GUILE_AUTO_COMPILE=0")
+     #:phases
+     #~(modify-phases
+        %standard-phases
+        (add-after 'build 'load-extension
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (substitute* (find-files "." "\\.scm")
+                                   (("\\(load-extension \"libguile-wayland\" *\"(.*)\"\\)" _ o)
+                                    (string-append
+                                     (object->string
+                                      `(or (false-if-exception
+                                            (load-extension "libguile-wayland" ,o))
+                                           (load-extension
+                                            ,(string-append
+                                              #$output
+                                              "/lib/libguile-wayland.so")
+                                            ,o)))))))))))
+   (native-inputs
+    (list autoconf
+          automake
+          libtool
+          pkg-config
+          texinfo
+          guile-3.0-latest))
+   (inputs (list guile-3.0-latest wayland wayland-protocols))
+   (propagated-inputs
+    (list
+     guile-bytestructure-class
+     guile-bytestructures))
+   (synopsis "")
+   (description "")
+   (home-page "https://github.com/guile-wayland/guile-wayland")
+   (license license:gpl3+)))
 
 guile-wayland
