@@ -8,6 +8,9 @@ GUILE_LOAD_COMPILED_PATH="$abs_top_builddir/modules${GUILE_LOAD_COMPILED_PATH:+:
 GUILE_LOAD_PATH="$abs_top_builddir/modules:$abs_top_builddir:$GUILE_LOAD_PATH"
 LTDL_LIBRARY_PATH="$abs_top_builddir/modules/wayland/.libs/"
 PATH="$abs_top_builddir/scripts:$abs_top_builddir:$PATH"
+WAYLAND_PROTOCOLS_XMLS="$WAYLAND_PROTOCOLS_XMLS"
+
+export WAYLAND_PROTOCOLS_XMLS
 
 export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH GUILE_SYSTEM_EXTENSIONS_PATH
 
