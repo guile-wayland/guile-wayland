@@ -18,7 +18,8 @@
   #:use-module (sxml simple)
   #:use-module (sxml match)
   #:use-module (bytestructure-class)
-  #:export (use-wayland-protocol))
+  #:export (use-wayland-protocol
+            guile-wayland-protocol-path))
 
 (define-syntax define-type
   (lambda (x)
@@ -154,6 +155,18 @@
      ((object) "o")
      ((array) "a")
      ((fd) "h"))))
+
+
+(define guile-wayland-protocol-path
+  (make-parameter
+   (cons %wayland-protocols-dir
+         (or (parse-path (getenv "GUILE_WAYLAND_PROTOCOL_PATH"))
+             (list)))))
+(define (find-protocol path)
+  (or (search-path
+       (guile-wayland-protocol-path)
+       path)
+      path))
 
 (define-syntax use-wayland-protocol
   (lambda (x)
@@ -493,7 +506,8 @@
                           (let ((path (syntax->datum #'xml-path)))
                             (sxml->protocol
                              (file->sxml
-                              (cond ((string? path) path)
+                              (cond ((string? path)
+                                     (find-protocol path))
                                     ((symbol? path)
                                      (module-ref (current-module) path))))))
                           (syntax->datum #'(a ...))))))))
