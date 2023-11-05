@@ -39,6 +39,7 @@ SOURCES =            \
  scanner.scm         \
  server/protocol/wayland.scm \
  client/protocol/wayland.scm \
+ client/protocol/viewporter.scm \
  client/protocol/xdg-shell.scm \
  egl.scm             \
  interface.scm       \
