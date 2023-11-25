@@ -11,11 +11,20 @@ typedef struct {
 static void listener_call (struct wl_listener *listener, void *data){
   Listener *l;
   l=wl_container_of(listener,l,listener);
+  SCM slistener=scm_call_1(scm_c_public_ref
+                           ("wayland server listener", "wrap-wl-listener"),
+                           scm_from_pointer(listener,NULL));
+  SCM signal = scm_slot_ref (slistener, scm_from_utf8_symbol ("signal"));
+  SCM sdata=scm_from_pointer(data,NULL);
+  if (scm_is_true(signal))
+    {
+      SCM data_wrap= scm_slot_ref (signal, scm_from_utf8_symbol ("data-wrapper"));
+      if (scm_is_true(data_wrap))
+        sdata = scm_call_1 (data_wrap, sdata);
+    }
   scm_call_2(l->callback,
-             scm_call_1(scm_c_public_ref
-                        ("wayland server listener", "wrap-wl-listener"),
-                        scm_from_pointer(listener,NULL)),
-             scm_from_pointer(data,NULL));
+             slistener,
+             sdata);
 }
 
 SCM_DEFINE (scm_make_wl_listener, "make-wl-listener", 1, 0, 0, (SCM proc), "")

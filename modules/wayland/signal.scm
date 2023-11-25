@@ -29,6 +29,7 @@
 
 (define-bytestructure-class <wl-signal> ()
   %wl-signal-struct wrap-wl-signal unwrap-wl-signal wl-signal?
+  (data-wrapper #:allocation #:instance #:init-value #f)
   (listener-list #:accessor .listener-list))
 
 (define (make-wl-signal)
@@ -37,6 +38,7 @@
     (bytestructure-descriptor-size %wl-signal-struct))))
 
 (define (wl-signal-add signal listener)
+  (slot-set! listener 'signal signal)
   (wl-list-insert (.prev (.listener-list signal)) (.link listener)))
 
 (define* (wl-signal-init #:optional (signal (make-wl-signal)))
