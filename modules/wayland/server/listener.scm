@@ -35,5 +35,6 @@
   %wl-listener-struct
   wrap-wl-listener unwrap-wl-listener wl-listener?
   (signal #:allocation #:instance #:init-value #f)
+  (scm-created? #:allocation #:instance #:init-value #f)
   (link #:accessor .link)
   (notify #:accessor .notify))

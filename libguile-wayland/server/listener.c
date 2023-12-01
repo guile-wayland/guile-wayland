@@ -35,6 +35,8 @@ SCM_DEFINE (scm_make_wl_listener, "make-wl-listener", 1, 0, 0, (SCM proc), "")
   SCM s_listener = scm_call_1 (
       scm_c_public_ref ("wayland server listener", "wrap-wl-listener"),
       scm_from_pointer (&listener->listener, NULL));
+  scm_gc_protect_object(s_listener);
+  scm_slot_set_x(s_listener, scm_from_utf8_symbol("scm-created?"), SCM_BOOL_T);
   return s_listener;
 }
 
@@ -44,6 +46,8 @@ SCM_DEFINE (scm_wl_listener_remove, "wl-listener-remove", 1, 0, 0,
   SCM listner_p = (scm_call_1 (scm_c_public_ref ("wayland server listener", "unwrap-wl-listener"),
                                listener));
   struct wl_listener *wl_listener = scm_to_pointer (listner_p);
+  if (scm_to_bool(scm_slot_ref(listener, scm_from_utf8_symbol("scm-created?"))))
+    scm_gc_unprotect_object(listener);
   wl_list_remove (&wl_listener->link);
   return SCM_UNSPECIFIED;
 }
