@@ -60,12 +60,13 @@
 (define-syntax define-wl-server-procedure
   (lambda (x)
     (syntax-case x ()
-      ((_ (name args ...) (return-type cname arg-types) body ...)
+      ((_ (pname args ...) (return-type cname arg-types) body ...)
        (with-syntax ((% (datum->syntax x '%)))
          #'(begin
-             (define-public name
+             (define-public pname
                (let ((% (wayland-server->procedure return-type cname arg-types)))
                  (lambda* (args ...)
+                   #((name . pname))
                    body ...))))))
       ((o-name (name args ...) (return-type cname arg-types))
        #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
@@ -73,12 +74,13 @@
 (define-syntax define-wl-client-procedure
   (lambda (x)
     (syntax-case x ()
-      ((_ (name args ...) (return-type cname arg-types) body ...)
+      ((_ (pname args ...) (return-type cname arg-types) body ...)
        (with-syntax ((% (datum->syntax x '%)))
          #'(begin
-             (define-public name
+             (define-public pname
                (let ((% (wayland-client->procedure return-type cname arg-types)))
                  (lambda* (args ...)
+                   #((name . pname))
                    body ...))))))
       ((o-name (name args ...) (return-type cname arg-types))
        #'(o-name (name args ...) (return-type cname arg-types) (% args ...))))))
