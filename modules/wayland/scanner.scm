@@ -335,7 +335,7 @@
                                                        ((and (eq? type 'server) (equal? atype "new_id") (not itype))
                                                         #`((ffi:pointer->string interface) version* name*))
                                                        ((and (eq? type 'client) (equal? atype "new_id"))
-                                                        #`(name*))
+                                                        #`((#,(->syntax (make-%wrap-name iname)) name*)))
                                                        ((or (member atype '("int" "fd" "new_id" "uint" "fixed")))
                                                         #`(name*))
                                                        ((equal? atype "string")
