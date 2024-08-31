@@ -96,5 +96,19 @@
           #:slot-set! (const #f)
           #:accessor .events))
 
+(define-method (write (o <wl-interface>) file)
+  (let ((class (class-of o)))
+    (begin
+      (display "#<" file)
+      (display (class-name class) file)
+      (display #\space file)
+      (display (.name o) file)
+      (display #\space file)
+      (display #\v file)
+      (display (.version o) file)
+      (display #\space file)
+      (display-address o file)
+      (display #\> file))))
+
 (eval-when (expand load eval)
   (load-extension "libguile-wayland" "scm_init_wl_interface"))
