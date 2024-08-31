@@ -41,6 +41,22 @@
   (signature #:accessor .signature)
   (types #:accessor .types))
 
+(define (display-address o file)
+  (display (number->string (object-address o) 16) file))
+
+(define-method (write (o <wl-message>) file)
+  (let ((class (class-of o)))
+    (begin
+      (display "#<" file)
+      (display (class-name class) file)
+      (display #\space file)
+      (display (.name o) file)
+      (display #\space file)
+      (write (.signature o)  file)
+      (display #\space file)
+      (display-address o file)
+      (display #\> file))))
+
 (define-bytestructure-class <wl-interface> ()
   %wl-interface-struct
   wrap-wl-interface unwrap-wl-interface wl-interface?
