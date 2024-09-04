@@ -156,7 +156,7 @@
   (define itype (arg-interface arg))
   (define allow-null? (arg-allow-null? arg))
   (string-append
-   (if (or (is-nullable-type? (arg-type arg)) allow-null?) "?" "")
+   (if (and (is-nullable-type? (arg-type arg)) allow-null?) "?" "")
    (case (string->symbol (arg-type arg))
      ((int) "i")
      ((new_id) (if itype "n" "sun"))
