@@ -20,9 +20,6 @@
             .link
             .notify))
 
-(eval-when (expand load eval)
-  (load-extension "libguile-wayland" "scm_init_wl_listener"))
-
 (define wl-notify-func
   (bs:pointer '*))
 
@@ -35,6 +32,35 @@
   %wl-listener-struct
   wrap-wl-listener unwrap-wl-listener wl-listener?
   (signal #:allocation #:instance #:init-value #f)
-  (scm-created? #:allocation #:instance #:init-value #f)
+  (scm-proc #:allocation #:instance)
   (link #:accessor .link)
-  (notify #:accessor .notify))
+  (notify #:init-keyword #:notify #:accessor .notify))
+
+(define %listeners (make-weak-key-hash-table))
+
+(define (make-wl-listener proc)
+  (letrec ((l (make <wl-listener>))
+           (pre
+            (lambda (_ raw-data)
+              (let* ((signal (slot-ref l 'signal))
+                     (data-wrapper
+                      (and signal (slot-ref signal 'data-wrapper))))
+                (proc l (if data-wrapper
+                            (data-wrapper raw-data)
+                            raw-data)))))
+           (pre-p
+            (procedure->pointer
+             void
+             pre
+             '(* *))))
+    (slot-set! l 'scm-proc proc)
+    (slot-set! l 'notify pre-p)
+    (hashq-set! %listeners l (list proc pre-p))
+    l))
+
+(define (wl-listener-remove listener)
+  (wl-list-remove (.link listener))
+  (hashq-remove! %listeners listener))
+
+;; (eval-when (expand load eval)
+;;   (load-extension "libguile-wayland" "scm_init_wl_listener"))
