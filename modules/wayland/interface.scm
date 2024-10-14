@@ -32,7 +32,8 @@
   (bs:struct
    `((name ,cstring-pointer*)
      (signature ,cstring-pointer*)
-     (types ,(bs:pointer %wl-interface-struct)))))
+     (types ,(bs:pointer
+              (bs:pointer %wl-interface-struct))))))
 
 (define-bytestructure-class <wl-message> ()
   %wl-message-struct
