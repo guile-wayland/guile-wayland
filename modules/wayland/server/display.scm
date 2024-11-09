@@ -31,7 +31,9 @@
   #:use-module (bytestructures guile)
   #:export (wl-display-add-socket*)
   #:re-export (wrap-wl-display
-               unwrap-wl-display))
+               unwrap-wl-display
+               wl-display?))
+
 
 (define-wl-server-procedure (wl-display-create)
   ('* "wl_display_create" '())
