@@ -1,0 +1,14 @@
+(channel
+ (version 0)
+ (url "https://github.com/guile-wayland/guile-wayland")
+ (directory ".guix/modules")
+ (dependencies
+  (channel
+   (name guile-bytestructure-class)
+   (branch "main")
+   (url "https://github.com/Z572/guile-bytestructure-class"))))
+
+
+;; Local Variables:
+;; mode: lisp
+;; End:
