@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([guile-wayland], [0.0.2],
-                         [873216071@qq.com],
+                         [z572@z572.online],
                          [guile-wayland],
                          [https://github.com/guile-wayland/guile-wayland])
 AC_CONFIG_MACRO_DIRS([m4])
