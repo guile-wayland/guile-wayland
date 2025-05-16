@@ -11,17 +11,20 @@
   (test-error "guile-wayland-protocol-path: fail"
               'system-error
               (let ((m (make-fresh-user-module)))
+                (set-module-name! m '(wayland client protocol tst))
                 (module-use! m (resolve-interface
                                 '(wayland client protocol wayland)))
                 (module-use! m (resolve-interface '(wayland scanner)))
-                (eval '(use-wayland-protocol ("idle.xml" #:type client)) m)))
+                (eval #'(use-wayland-protocol ("idle.xml" #:type client)) m)))
   (test-assert "guile-wayland-protocol-path"
     (let ((m (make-fresh-user-module)))
+      (set-module-name! m '(wayland client protocol tst))
       (module-use! m (resolve-interface '(wayland client protocol wayland)))
       (module-use! m (resolve-interface '(wayland scanner)))
       (parameterize ((guile-wayland-protocol-path
                       (list (dirname (current-filename)))))
-        (eval '(use-wayland-protocol ("idle.xml" #:type client)) m)
+        (eval #'(begin
+                  (use-wayland-protocol ("idle.xml" #:type client))) m)
         (module-defined?
          m
          '%org-kde-kwin-idle-struct)))))

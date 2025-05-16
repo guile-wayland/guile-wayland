@@ -513,12 +513,17 @@
              (define-public enames evalues) ...))))
     (syntax-case x ()
       ((_ (xml-path a ...))
-       #`(begin #,@(apply protocol->code
-                          (let ((path (syntax->datum #'xml-path)))
-                            (sxml->protocol
-                             (file->sxml
-                              (cond ((string? path)
-                                     (find-protocol path))
-                                    ((symbol? path)
-                                     (module-ref (current-module) path))))))
-                          (syntax->datum #'(a ...))))))))
+       (match (module-name (current-module))
+         (('wayland (or 'client 'server) 'protocol . arg)
+          #`(begin #,@(apply protocol->code
+                             (let ((path (syntax->datum #'xml-path)))
+                               (sxml->protocol
+                                (file->sxml
+                                 (cond ((string? path)
+                                        (find-protocol path))
+                                       ((symbol? path)
+                                        (module-ref (current-module) path))))))
+                             (syntax->datum #'(a ...)))))
+         (else (syntax-violation 'use-wayland-protocol
+                                 "use-wayland-protocol should not be used outside the (wayland client protocol) or (wayland server protocol) submodule!"
+                                 x)))))))
