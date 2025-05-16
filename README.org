@@ -8,7 +8,6 @@
 Guile-Wayland is library that provides access to the [[https://wayland.freedesktop.org/][Wayland Protocol]] for programs written in [[https://www.gnu.org/software/guile][GNU Guile Scheme]].
 
 * Features
-- The main feature is auto-generating Guile Code ([[https://www.gnu.org/software/guile/manual/html_node/GOOPS.html][GOOPs]] classes) from Wayland's XML descriptions, minimizing direct C interop. See ~(@@ (wayland scanner) use-wayland-protocol)~
 - To simplify this a separate library [[https://github.com/Z572/guile-bytestructure-class][guile-bytestructure-class]] was written. It's based on [[https://github.com/TaylanUB/scheme-bytestructures][scheme-bytestructures]]
 * Requirements
 - Autoconf
