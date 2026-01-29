@@ -37,6 +37,7 @@
             wl-display-disconnect
             wl-display-get-fd
             wl-display-dispatch
+            wl-display-dispatch-pending
             wl-display-roundtrip
 
 
@@ -68,6 +69,10 @@
 
 (define-wl-client-procedure (wl-display-dispatch display)
   (ffi:int "wl_display_dispatch" '(*))
+  (% (unwrap-wl-display display)))
+
+(define-wl-client-procedure (wl-display-dispatch-pending display)
+  (ffi:int "wl_display_dispatch_pending" '(*))
   (% (unwrap-wl-display display)))
 
 (define-wl-client-procedure (wl-display-roundtrip display)
