@@ -470,21 +470,20 @@
                            ffi-rest-args ...))))
                     (lambda (obj lambda-args ...)
                       (let ((%arg-out
-                             (wrap-wl-proxy
-                              (%wl-proxy-marshal-flags
-                               (#,(->syntax (make-%unwrap-name iname)) obj)
-                               opcode-name
-                               #,@(if ret
-                                      (or (and=> (arg-interface ret)
-                                                 (lambda (x)
-                                                   (with-syntax
-                                                       ((iname (->syntax
-                                                                (make-%interface-name x))))
-                                                     #`((unwrap-wl-interface iname)
-                                                        (wl-proxy-get-version obj)))))
-                                          #'((unwrap-wl-interface %arg-interface) %arg-version))
-                                      (list #`ffi:%null-pointer #`(wl-proxy-get-version obj)))
-                               destructor-flag rest-args ...))))
+                             (%wl-proxy-marshal-flags
+                              (#,(->syntax (make-%unwrap-name iname)) obj)
+                              opcode-name
+                              #,@(if ret
+                                     (or (and=> (arg-interface ret)
+                                                (lambda (x)
+                                                  (with-syntax
+                                                      ((iname (->syntax
+                                                               (make-%interface-name x))))
+                                                    #`((unwrap-wl-interface iname)
+                                                       (wl-proxy-get-version obj)))))
+                                         #'((unwrap-wl-interface %arg-interface) %arg-version))
+                                     (list #`ffi:%null-pointer #`(wl-proxy-get-version obj)))
+                              destructor-flag rest-args ...)))
                         %arg-out
                         #,(if ret
                               (or (and=> (arg-interface ret)
@@ -492,7 +491,7 @@
                                            #`(#,(->syntax
                                                  (make-%wrap-name x))
                                               %arg-out)))
-                                  #'%arg-out)
+                                  #'(wrap-wl-proxy %arg-out))
                               (->syntax *unspecified*))))))))))))
 
     (define (enum->code enum in-name)
