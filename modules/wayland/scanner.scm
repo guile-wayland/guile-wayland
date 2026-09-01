@@ -361,19 +361,32 @@
                  bs wrap unwrap check (slot-name #:init-keyword keyword) ...)
                (export bs wrap unwrap check cname)
                (define-method (initialize (obj cname) initargs)
-                 (next-method
-                  obj (append (list keyword
-                                    (let ((proc (get-keyword keyword initargs #f)))
-                                      (cond ((ffi:pointer? proc) proc)
-                                            ((procedure? proc)
-                                             (ffi:procedure->pointer
-                                              ffi:void
-                                              (lambda lambda-args
-                                                (proc call-args ...))
-                                              (list '* '* ffi-descs ...)))
-                                            ((->bool proc) (throw 'wayland-init-fail keyword proc))
-                                            (else ffi:%null-pointer)))) ...
-                                            initargs)))))))
+                 (let ((callbacks '()))
+                   (let ((result
+                          (next-method
+                           obj (append (list keyword
+                                     (let ((proc (get-keyword keyword initargs #f)))
+                                       (cond ((ffi:pointer? proc) proc)
+                                             ((procedure? proc)
+                                              (let* ((callback-procedure
+                                                      (lambda lambda-args
+                                                        (proc call-args ...)))
+                                                     (callback
+                                                      (ffi:procedure->pointer
+                                                       ffi:void
+                                                       callback-procedure
+                                                       (list '* '* ffi-descs ...))))
+                                                (set! callbacks
+                                                      (cons callback-procedure
+                                                            (cons callback callbacks)))
+                                                callback))
+                                             ((->bool proc) (throw 'wayland-init-fail keyword proc))
+                                             (else ffi:%null-pointer)))) ...
+                                             initargs))))
+                     (for-each (lambda (callback)
+                                 (bs-keep-alive! obj callback))
+                               callbacks)
+                     result)))))))
     (define (message->procedure-code request iname index type)
       (assert (and (message? request)
                    (eq? (message-type request)
